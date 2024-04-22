@@ -10,7 +10,7 @@
 
 <body>
 
-    <div class="login-area login-bg" >       
+    <div class="login-area " style="background-color:#818a99;"  >       
         <div class="container">
             <div class="login-box ptb--100 animate__animated animate__zoomInDown">
                 <form id="login_form">
@@ -32,7 +32,7 @@
                             </div>
                             
                             <button id="form_submit" type="submit" class="btn  btn-lg btn-block mb-4"  style="background-color: #3F6BA4; color: #fff; font-size: 15px;" > Log In </button>
-                            <a   href="register" class="btn  btn-lg btn-block"  style="font-size: 15px;" > Register</a>
+                            <!-- <a   href="register" class="btn  btn-lg btn-block"  style="font-size: 15px;" > Register</a> -->
 
                             
                         </div>

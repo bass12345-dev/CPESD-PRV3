@@ -92,7 +92,6 @@ $routes->group('user', function($routes) {
 $routes->group('user/rfa', function($routes) {
     $routes->add('received', 'user\ReceivedController::index',['filter' => 'authGuard']);
      $routes->add('track', 'user\TrackRFAController::index',['filter' => 'authGuard']);
-    
 });
 
 
