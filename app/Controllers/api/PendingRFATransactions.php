@@ -78,7 +78,7 @@ class PendingRFATransactions extends BaseController
                  $reference_number = '001';
             }
 
-            return  $reference_number;
+            echo  $reference_number;
 
        }
    }

@@ -85,7 +85,8 @@ class PendingTransactions extends BaseController
 
                 $pmas_number = '001';
              }
-             return $pmas_number;
+            
+            echo $pmas_number;
 
           
         }
