@@ -124,6 +124,7 @@ $('#add_rfa_form').on('submit', function (e) {
                   alert("Error occured.please try again");
                   $('.btn-add-rfa').prop("disabled", false);
                   $('.btn-add-rfa').text('Submit');
+                  location.reload();
                },
             })
          } else if (result.dismiss === "cancel") {
@@ -197,6 +198,7 @@ $('#add_client_form').on('submit', function (e) {
          alert("Error occured.please try again");
          $('.btn-add-client').text('Save Changes');
          $('.btn-add-client').removeAttr('disabled');
+         location.reload();
       },
    });
 });
