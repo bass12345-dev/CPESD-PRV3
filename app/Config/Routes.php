@@ -245,7 +245,7 @@ $routes->post('api/refer-to', 'api\PendingRFATransactions::refer_to');
 
 //User Api:
 $routes->post('api/get-last-pmas-number', 'api\PendingTransactions::get_last_pmas_number');
-$routes->post('api/get-last-reference-number', 'api\TypeOfRequest::get_last_ref_number');
+$routes->post('api/get-last-reference-number', 'api\PendingRFATransactions::get_last_ref_number');
 
 //Pending Transactions
 $routes->post('api/add-transaction', 'api\PendingTransactions::add_transaction');
