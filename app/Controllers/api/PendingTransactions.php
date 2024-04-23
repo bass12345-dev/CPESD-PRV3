@@ -43,69 +43,74 @@ class PendingTransactions extends BaseController
     {
         if ($this->request->isAJAX()) {
 
-            $l = '';
-
-            $verify = $this->CustomModel->count_all_order_by($this->transactions_table,'date_and_time_filed',$this->order_by_desc);
-            if($verify) {
-                if(date('Y', time()) > date('Y', strtotime($this->CustomModel->get_all_order_by($this->transactions_table,'date_and_time_filed',$this->order_by_desc)[0]->date_and_time_filed)))
-                {
-                    
-                     $l = '001';
 
 
-                }else if(date('Y', time()) < date('Y', strtotime($this->CustomModel->get_all_order_by($this->transactions_table,'date_and_time_filed',$this->order_by_desc)[0]->date_and_time_filed))){
+            #define reference number variable
+            $pmas_number = '';
+
+            #count rfa added in database
+            $count_pmas  = $this->CustomModel->count_all_order_by($this->transactions_table,'date_and_time_filed',$this->order_by_desc);
 
 
+            #get current year
+            $current_year = date('Y', time());
 
-                $x = $this->TransactionModel->get_last_pmas_number_where(date('Y-m-d', time()))->getResult()[0]->number + 1;
-
-                 $l = $this->put_zeros($x);
-
-                }else if (date('Y', time()) === date('Y', strtotime($this->CustomModel->get_all_order_by($this->transactions_table,'date_and_time_filed',$this->order_by_desc)[0]->date_and_time_filed))) 
-	
-			    {
-                    $x = $this->TransactionModel->get_last_pmas_number_where(date('Y', time()))->getResult()[0]->number + 1;
-
-                    $l = $this->put_zeros($x);
-                 
-                }
-            }else {
-                    
-
-                $l = '001';
+            #ymd format = Year Month Day
+            $ymd_format = date('Y-m-d', time());
 
 
+            #CONDITION
 
-            }
-            
-            echo $l;
+             if($count_pmas) {
 
+                $last_created = date('Y', strtotime($this->CustomModel->get_all_order_by($this->transactions_table,'date_and_time_filed',$this->order_by_desc)[0]->date_and_time_filed));
+
+                  if($current_year > $last_created ){
+
+                        $pmas_number = '001';
+
+                  }else if($current_year < $last_created){
+
+                        $last_pmas_number_add_one = $this->TransactionModel->get_last_pmas_number_where($ymd_format)->getResult()[0]->number + 1;
+                        $pmas_number = $this->put_zeros($last_pmas_number_add_one);
+
+                  }else if($current_year === $last_created){
+
+                        $last_pmas_number_add_one = $this->TransactionModel->get_last_pmas_number_where($current_year)->getResult()[0]->number + 1;
+                        $pmas_number = $this->put_zeros($last_pmas_number_add_one);
+
+                  }
+
+             }else {
+
+                $pmas_number = '001';
+             }
+             return $pmas_number;
+
+          
         }
     }
 
 
-    function put_zeros($x){
+   function put_zeros($last_digits){
 
-        $l = '';
-           if ($x  < 10) {
+        $reference_number = '';
 
-                        $l = '00'.$x;
-                      
-                    }else if($x < 100 ) {
+        switch ($last_digits) {
+            case $last_digits < 10:
+                $reference_number = '00'.$last_digits;
+                break;
+            case $last_digits < 100:
+                $reference_number = '0'.$last_digits;
+                break;
+            default:
+               $reference_number = $last_digits;
+                break;
+        }
+        return $reference_number;
 
-                        $l = '0'.$x;
-                       
-
-                    }else {
-
-
-                         $l = $x;
-                        
-                    }
-
-                    return $l;
-
-    }
+   }
+  
 
 
 

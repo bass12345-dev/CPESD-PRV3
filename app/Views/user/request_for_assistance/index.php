@@ -144,7 +144,7 @@ function get_last_reference_number() {
       },
       error: function (xhr) {
          alert("Error occured.please try again");
-         location.reload();
+         // location.reload();
       },
    });
 }
