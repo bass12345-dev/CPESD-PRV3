@@ -3,54 +3,7 @@
    <head>
       <?php echo view('includes/meta.php') ?>
       <?php echo view('includes/css.php') ?> 
-      <style>
-         /*CSS*/
-               .tree-content {
-                  margin: 0px;
-                  padding: 0px;
-                  width: 100%;
-                  height: 180vh;
-                  font-family: Helvetica;
-                  overflow: hidden;
-               }
-
-               #tree {
-                  width: 100%;
-                  height: 180vh;
-               }
-
-               #exTab1 .tab-content {
-  color : white;
-  background-color: #428bca;
-  padding : 5px 15px;
-}
-
-#exTab2 h3 {
-  color : white;
-  background-color: #428bca;
-  padding : 5px 15px;
-}
-
-/* remove border radius for the tab */
-
-#exTab1 .nav-pills > li > a {
-  border-radius: 0;
-}
-
-/* change border radius for the tab , apply corners on top*/
-
-#exTab3 .nav-pills > li > a {
-  border-radius: 4px 4px 0 0 ;
-}
-
-#exTab3 .tab-content {
-  color : white;
-  background-color: #428bca;
-  padding : 5px 15px;
-}
-
-
-      </style>
+      
    </head>
    <body>
     <?php echo view('includes/preloader') ?> 
@@ -107,7 +60,6 @@
     <?php echo view('admin/cso/view/modals/print_option_modal'); ?> 
 
       <?php echo view('includes/scripts.php') ?> 
-      <script src="<?php echo site_url() ?>assets/js/vendor/orgchart.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.min.js"></script> 
       <script src="<?php echo base_url(); ?>assets/js/overly.js"></script>
       <script src="<?php echo base_url(); ?>assets/js/Jquery-print.js"></script>
@@ -784,35 +736,7 @@ $('#add_officer_form').on('submit', function(e) {
 
 
 
-var chart = new OrgChart(document.getElementById("tree"), {
-    enableSearch: false,
-    enableDragDrop: false, 
-    lazyLoading: true, 
-    mouseScrool: OrgChart.none,
-    menu : {
-         pdf : {
-            text : 'Export Pdf'
-         },
-         png: { text: "Export PNG" },
-            svg: { text: "Export SVG" },
-            csv: { text: "Export CSV" },
-            json: { text: "Export JSON" }
-         
-    },
-    tags: {
-        "assistant": {
-            template: "ula"
-        }
-    },
-   //  mode: "dark",
-    anim: {func: OrgChart.anim.outBack, duration: 500},
-    
-    nodeBinding: {
-        field_0: "name",
-        field_1: "title",
-        img_0: "img"
-    }
-});
+
 
 function load_organization_chart(){
 
@@ -822,13 +746,6 @@ function load_organization_chart(){
             data : {cso_id :"<?php echo $_GET['id'] ?>"},
             dataType: "json",
             success: function(data) {
-
-               chart.load(data);
-
-               console.log(data)
-               
-
-
                $('#officers_table').DataTable({
                 scrollY: 500,
                 scrollX: true,

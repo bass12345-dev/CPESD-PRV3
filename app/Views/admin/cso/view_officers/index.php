@@ -106,9 +106,7 @@
                                  </table> 
                            </div>
                            </div>
-                           <!-- <div class="col-md-6 tree-content" >
-                              <div id="tree"></div>
-                           </div> -->
+                          
                         </div>
                      </div>
                   </div>

@@ -68,10 +68,11 @@
 	
 </div>
 
-
+<hr>
 <div class="row mt-4">
     <div class="col-md-12">
         <div class="data-tables">
+			<h2>Project/s Implemented</h2>
             <button class="btn sub-button pull-right mb-3 " data-toggle="modal" data-target="#add_project_modal">Add Project</button>
                 <table id="project_table" style="width:100%" class="text-center mb-3">
                     <thead class="bg-light text-capitalize" style="width:100%"  >
