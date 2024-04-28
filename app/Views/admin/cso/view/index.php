@@ -78,12 +78,12 @@
 
 
 const template = document.createElement('template');
-template.innerHTML = `
-  <iframe frameborder="0" 
-    width="1720" 
-    height="900">
-  </iframe>
-`
+template.innerHTML = '\
+  <iframe frameborder="0" \
+    width="1720" \
+    height="900">\
+  </iframe>\
+';
 
 class PdfViewer extends HTMLElement {
   constructor() {
@@ -106,18 +106,18 @@ class PdfViewer extends HTMLElement {
   updateIframeSrc() {
     this.shadowRoot.querySelector('iframe').setAttribute(
       'src', 
-      './../../uploads/cso_files/1/cor/sample.pdf'
+        './../../uploads/cso_files/150/cor/Programming for Intermediate Users Using Python.pdf'
     )
   }
 }
-window.customElements.define('pdf-viewer', PdfViewer)
+
 
 
 
 $(document).on('click','a#view_cor',function (e) {
 
     $('#view_file_modal').modal('show');
-    
+    window.customElements.define('pdf-viewer', PdfViewer)
 
 });
 

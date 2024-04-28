@@ -11,7 +11,7 @@
 
             <div class="modal-body" >
                <pdf-viewer  src=""></pdf-viewer>
-               
+              
             </div>
           
          
