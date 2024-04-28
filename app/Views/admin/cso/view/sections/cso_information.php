@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-md-6">
 		<table class="tablesaw table-bordered table-hover table" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-sortable-switch data-tablesaw-minimap data-tablesaw-mode-switch id="_table">
 			<tr>
 				<td colspan="2"> <a href="javascript:;" class="mt-2  mb-2 btn sub-button text-center  btn-rounded btn-md btn-block"><i class = "fa fa-user" aria-hidden = "true"></i> CSO Information</a> 
@@ -45,35 +45,35 @@
 				<td>COR</td>
 				<td>
 					<a href="javascript:;" class="view-pdf" id="view_cor" data-type="cor">View COR </a> 
-					<a href="javascript:;" class="btn btn-rounded btn-secondary pull-right" data-toggle="modal" data-target="#update_cor_modal">Update COR</a>
+					<a href="javascript:;" class="btn btn-rounded btn-secondary pull-right update_file" data-title="COR" data-type="cor" data-toggle="modal" data-target="#update_files_modal">Update COR</a>
 
 				</td>
 			</tr>
 			<tr>
 				<td>Bylaws</td>
 				<td>
-					<a href="javascript:;" class="view-pdf" id="view_bylaws" data-type="bylaws">View Bylaws</a> <a href="javascript:;" class="btn btn-rounded btn-secondary pull-right" data-toggle="modal" data-target="#update_bylaws_modal">Update Bylaws</a>
+					<a href="javascript:;" class="view-pdf" id="view_bylaws" data-type="bylaws">View Bylaws</a> <a href="javascript:;" class="btn btn-rounded btn-secondary pull-right update_file" data-title="ByLaws" data-type="bylaws" data-toggle="modal" data-target="#update_files_modal">Update Bylaws</a>
 				</td>
 			</tr>
 			<tr>
 				<td>Article</td>
 				<td>
 					<a href="javascript:; " class="view-pdf" id="view_aoc" data-type="articles">View AOC/AOI </a> 
-					<a href="javascript:;" class="btn btn-rounded btn-secondary pull-right" id="update_article" data-toggle="modal" data-target="#update_aoc_modal" >Update AOC/AOI </a>
+					<a href="javascript:;" class="btn btn-rounded btn-secondary pull-right update_file" data-title="AOC/AOI" data-type="aoc" data-toggle="modal" data-target="#update_files_modal" >Update AOC/AOI </a>
 				</td>
 			</tr>
 		
 		</table>
 	</div>
-	
+		<?php echo view('admin/cso/view/sections/cso_officers'); ?>  	
 </div>
 
 <hr>
 <div class="row mt-4">
     <div class="col-md-12">
-        <div class="data-tables">
-			<h2>Project/s Implemented</h2>
-            <button class="btn sub-button pull-right mb-3 " data-toggle="modal" data-target="#add_project_modal">Add Project</button>
+        <div class="data-tables border p-3">
+			<h2 class="mb-3">Project/s Implemented</h2>
+            <button class="btn sub-button pull-left mb-3 " data-toggle="modal" data-target="#add_project_modal">Add Project</button>
                 <table id="project_table" style="width:100%" class="text-center mb-3">
                     <thead class="bg-light text-capitalize" style="width:100%"  >
                         <tr>

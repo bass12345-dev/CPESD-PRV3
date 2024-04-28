@@ -143,10 +143,10 @@ $routes->group('api', ['filter' => 'authGuard'], function($routes) {
     $routes->post('get-cso-infomation', 'api\Cso::get_cso_information');
     $routes->post('update-cso-information', 'api\Cso::update_cso_information');
     $routes->post('update-cso-status', 'api\Cso::update_cso_status');
-    $routes->post('update-cor', 'api\Cso::update_cso_cor');
-    $routes->post('update-bylaws', 'api\Cso::update_cso_bylaws');
-    $routes->post('update-aoc', 'api\Cso::update_cso_aoc');
 
+    $routes->post('upload-cso-file', 'api\Cso::upload_cso_file');
+
+    
     $routes->post('get-cor', 'api\Cso::get_cso_cor');
     $routes->post('get-bylaws', 'api\Cso::get_cso_bylaws');
     $routes->post('get-aoc', 'api\Cso::get_cso_aoc');

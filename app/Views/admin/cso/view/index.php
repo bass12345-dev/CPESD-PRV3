@@ -3,7 +3,23 @@
    <head>
       <?php echo view('includes/meta.php') ?>
       <?php echo view('includes/css.php') ?> 
-      
+      <style>
+        .progress{
+            background-color: #8C52FF;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            height: 20px;
+            border-radius: 3px;
+            padding: 4px;
+        }
+        .progress-bar{
+            width: 0%;
+            height: 100%;
+            background-color: #fff;
+            border-radius: 3px;
+        }
+
+      </style>
    </head>
    <body>
     <?php echo view('includes/preloader') ?> 
@@ -14,7 +30,7 @@
             <div class="main-content-inner">
             <div class="row">
                <div class="col-12 mt-5">
-                  <div class="card" style="border: 1px solid; height: 250vh;">
+                  <div class="card border" >
                      <div class="card-body">
                         <div class="row">
                             <div class="col-md-12">
@@ -23,18 +39,9 @@
                             </div>
                         </div>
                         <div class="row">
-
                            <div class="col-md-12">
-
-                              <?php echo view('admin/cso/view/sections/cso_tabs'); ?>
-                                 <div class="tab-content clearfix mt-3">
-			                           <div class="tab-pane active" id="1a">
-                                       <?php echo view('admin/cso/view/sections/cso_information'); ?>  
-				                        </div>
-                                        
-				                        <div class="tab-pane" id="2a">
-                                       <?php echo view('admin/cso/view/sections/cso_officers'); ?>  
-				                        </div>
+                                <?php echo view('admin/cso/view/sections/cso_information'); ?>  
+                                
                               </div>
                            </div>   
                         </div>
@@ -49,11 +56,13 @@
       <?php echo view('admin/cso/view_officers/modals/add_officer_modal'); ?>   
 
 
+
       <?php echo view('admin/cso/modals/update_cso_status_modal'); ?> 
      <?php echo view('admin/cso/view/modals/update_cor_modal'); ?> 
-     <?php echo view('admin/cso/view/modals/update_bylaws_modal'); ?> 
-     <?php echo view('admin/cso/view/modals/update_aoc_modal'); ?> 
      <?php echo view('admin/cso/view/modals/view_file_modal'); ?> 
+
+
+
 
     <?php echo view('admin/cso/view/modals/add_project_modal'); ?> 
     <?php echo view('admin/cso/view/modals/update_project_modal'); ?> 
@@ -66,144 +75,121 @@
       <script>
 
 
- var myState = {
-            pdf: null,
-            currentPage: 1,
-            zoom: 3
-        }
-// var pdf = './../../uploads/cso_files/1/cor/compressed.tracemonkey-pldi-09.pdf';
 
 
+const template = document.createElement('template');
+template.innerHTML = `
+  <iframe frameborder="0" 
+    width="1720" 
+    height="900">
+  </iframe>
+`
+
+class PdfViewer extends HTMLElement {
+  constructor() {
+    super()
+    const shadowRoot = this.attachShadow({mode: 'open'});
+    shadowRoot.appendChild(template.content.cloneNode(true));
+
+  }
+  get observedAttributes() {
+    return ['src']
+  }
+  connectedCallback() {
+    this.updateIframeSrc()
+  }
+  attributeChangedCallback(name) {
+    if (['src', 'viewerPath'].includes(name)) {
+      this.updateIframeSrc()
+    }
+  }
+  updateIframeSrc() {
+    this.shadowRoot.querySelector('iframe').setAttribute(
+      'src', 
+      './../../uploads/cso_files/1/cor/sample.pdf'
+    )
+  }
+}
+window.customElements.define('pdf-viewer', PdfViewer)
 
 
-function render() {
-            myState.pdf.getPage(myState.currentPage).then((page) => {
-            
-                var canvas = document.querySelector('canvas');
-                var ctx = canvas.getContext('2d');
-     
-                var viewport = page.getViewport(myState.zoom);
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-         
-                page.render({
-                    canvasContext: ctx,
-                    viewport: viewport
-                });
-            });
-        }
-
-
-        document.getElementById('go_previous').addEventListener('click', (e) => {
-            if(myState.pdf == null || myState.currentPage == 1) 
-              return;
-            myState.currentPage -= 1;
-            document.getElementById("current_page").value = myState.currentPage;
-            render();
-        });
-        document.getElementById('go_next').addEventListener('click', (e) => {
-            if(myState.pdf == null || myState.currentPage > myState.pdf._pdfInfo.numPages) 
-               return;
-            myState.currentPage += 1;
-            document.getElementById("current_page").value = myState.currentPage;
-            render();
-        });
-        document.getElementById('current_page').addEventListener('keypress', (e) => {
-            if(myState.pdf == null) return;
-         
-            // Get key code 
-            var code = (e.keyCode ? e.keyCode : e.which);
-         
-            // If key code matches that of the Enter key 
-            if(code == 13) {
-                var desiredPage = 
-                document.getElementById('current_page').valueAsNumber;
-                                 
-                if(desiredPage >= 1 && desiredPage <= myState.pdf._pdfInfo.numPages) {
-                    myState.currentPage = desiredPage;
-                    document.getElementById("current_page").value = desiredPage;
-                    render();
-                }
-            }
-        });
-        // document.getElementById('zoom_in').addEventListener('click', (e) => {
-        //     if(myState.pdf == null) return;
-        //     myState.zoom += 0.5;
-        //     render();
-        // });
-        // document.getElementById('zoom_out').addEventListener('click', (e) => {
-        //     if(myState.pdf == null) return;
-        //     myState.zoom -= 0.5;
-        //     render();
-        // });
 
 $(document).on('click','a#view_cor',function (e) {
 
-    $('#view_cor').html('<div class="loader"></div>');
+    $('#view_file_modal').modal('show');
+    
 
-         setTimeout(() => {
+});
 
-          $.ajax({
-                            type: "POST",
-                            url: base_url + 'api/get-cor',
-                            data : {'id' : '<?php echo $_GET['id'] ?>'},
-                            cache: false,
-                            dataType: 'json', 
-                            // beforeSend :  function(){
 
-                            //         $('#view_cor').html('<div class="loader"></div>');
-                            // },
-                            success: function(data){
 
-                                if (data.resp) {
+// $(document).on('click','a#view_cor',function (e) {
 
-                                     $('#view_file_modal').modal('show');
-                                    pdf = data.file;
+//     $('#view_cor').html('<div class="loader"></div>');
 
-                                    console.log(pdf)
-                                   pdfjsLib.getDocument(pdf).then((pdf) => {  
+//          setTimeout(() => {
+
+//           $.ajax({
+//                             type: "POST",
+//                             url: base_url + 'api/get-cor',
+//                             data : {'id' : '<?php echo $_GET['id'] ?>'},
+//                             cache: false,
+//                             dataType: 'json', 
+//                             // beforeSend :  function(){
+
+//                             //         $('#view_cor').html('<div class="loader"></div>');
+//                             // },
+//                             success: function(data){
+
+//                                 if (data.resp) {
+
+//                                      $('#view_file_modal').modal('show');
+//                                     pdf = data.file;
+
+//                                     console.log(pdf)
+//                                    pdfjsLib.getDocument(pdf).then((pdf) => {  
 
                                        
-                                        myState.pdf = pdf;
-                                        render();
-                                    });
+//                                         myState.pdf = pdf;
+//                                         render();
+//                                     });
 
 
-                                   $("a.download-file").attr("href", pdf)
-                                    $('#view_cor').html('View COR');
+//                                    $("a.download-file").attr("href", pdf)
+//                                     $('#view_cor').html('View COR');
 
-                                }else {
+//                                 }else {
 
-                                     Toastify({
-                                              text: data.message,
-                                              className: "info",
-                                              style: {
-                                                "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                                "height" : "60px",
-                                                "width" : "350px",
-                                                "font-size" : "20px"
-                                              }
-                                            }).showToast();
+//                                      Toastify({
+//                                               text: data.message,
+//                                               className: "info",
+//                                               style: {
+//                                                 "background" : "linear-gradient(to right, #00b09b, #96c93d)",
+//                                                 "height" : "60px",
+//                                                 "width" : "350px",
+//                                                 "font-size" : "20px"
+//                                               }
+//                                             }).showToast();
                                     
-                                    $('#view_cor').html('View COR');
-                                }
+//                                     $('#view_cor').html('View COR');
+//                                 }
                                        
-                            }, error : function(){
+//                             }, error : function(){
 
-                                    alert('error');
-                                     $("a.download-file").attr("href", data.file)
-                                    $('#view_cor').html('View COR');
+//                                     alert('error');
+//                                      $("a.download-file").attr("href", data.file)
+//                                     $('#view_cor').html('View COR');
 
-                            }
+//                             }
 
-                    })
+//                     })
 
 
-           }, 500)
+//            }, 500)
 
      
     
-});
+// });
 
 
 
@@ -262,59 +248,6 @@ $(document).on('click','a#view_bylaws',function (e) {
 
 
 
-
-// $(document).on('click','a#view_bylaws',function (e) {
-
-//      $('#view_cor').html('<div class="loader"></div>');
-
-//   setTimeout(() => {
-
-//           $.ajax({
-//                             type: "POST",
-//                             url: base_url + 'api/get-bylaws',
-//                             data : {'id' : '<?php echo $_GET['id'] ?>'},
-//                             cache: true,
-//                             dataType: 'json', 
-//                             beforeSend :  function(){
-
-//                                     $('#view_bylaws').html('<div class="loader"></div>');
-//                             },
-//                             success: function(data){
-
-//                                 if (data.resp) {
-
-//                                      $('#view_file_modal').modal('show');
-//                                     pdf = data.file
-//                                    pdfjsLib.getDocument(pdf).then((pdf) => {    
-//                                         myState.pdf = pdf;
-//                                         render();
-//                                     });
-
-//                                     $('#view_bylaws').html('View Bylaws');
-
-//                                 }else {
-
-//                                      Toastify({
-//                                               text: data.message,
-//                                               className: "info",
-//                                               style: {
-//                                                 "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-//                                                 "height" : "60px",
-//                                                 "width" : "350px",
-//                                                 "font-size" : "20px"
-//                                               }
-//                                             }).showToast();
-                                    
-//                                     $('#view_bylaws').html('View COR');
-//                                 }
-                                       
-//                             }
-
-//                     })
-
-//      }, 500)
-    
-// });
 
 
 
@@ -389,7 +322,6 @@ function Validate_file(oInput) {
                 for (var j = 0; j < _validFileExtensions.length; j++) {
                     var sCurExtension = _validFileExtensions[j];
                     if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
-                         // $('button.update-cor-cso-save').removeClass('d-none')
                         blnValid = true;
                         break;
                          
@@ -414,331 +346,154 @@ function Validate_file(oInput) {
 
 
 
-$('#update_aoc_form').on('submit', function(e) {
-        e.preventDefault();
 
-        
-        $.ajax({
-             type: "POST",
-            url: base_url + 'api/update-aoc',
-            data: new FormData(this),
-            contentType: false,
+//UPLOAD FILES
+
+$(document).on('click','a.update_file', function(){
+    const type = $(this).data('type');
+    const file_title = $(this).data('title');
+    $('#update_files_form').find('input[name=file_type]').val(type);
+    $('#update_files_form').find('label.file_title').text(file_title);
+    $('h5.modal_file_title').text('Update '+file_title);
+});
+
+
+$('#update_files_form').on('submit', function(e) {
+e.preventDefault();
+
+let form = new FormData(this);
+let type = $(this).find('input[name=file_type]').val();
+let save_btn = $('button.save_file_button');
+var url = 'api/upload-cso-file';
+_ajax_file(url,form,save_btn);
+});
+
+
+function _ajax_file(url='',form,save_btn=''){
+
+    var startTime = new Date().getTime();
+    var xhr = $.ajax({
+        xhr: function () {
+            var xhr = new XMLHttpRequest();
+            xhr.upload.addEventListener("progress", function (e) {
+                if (e.lengthComputable) {
+                    var percentComplete = ((e.loaded / e.total) * 100);
+                     $("#percent").html(Math.floor(percentComplete) + '%');
+                     $(".progress-bar").width(percentComplete + '%');
+                }
+            }, false);
+            return xhr;
+        },
+
+        type: "POST",
+        url: base_url + url,
+        data: form,
+        contentType: false,
+        cache: false,
+        processData:false,
+        dataType: 'json',
+        beforeSend: function () {
+                $('.prog_cent').attr('hidden',false);
+                save_btn.html('<div class="loader"></div>');
+                save_btn.prop("disabled", true);
+                $("#percent").html('0%');
+                $(".progress-bar").width('0%');
+        },
+        error: function(xhr) { // if error occured
+                alert("Error occured.please try again");
+                save_btn.prop("disabled", false);
+                save_btn.text('Save Changes');
+                $('.prog_cent').attr('hidden',true);
+        },
+        success: function (data) {
+
+        if (data.response) {
+                    $('#update_files_modal').modal('hide');
+                    save_btn.prop("disabled", false);
+                    save_btn.text('Save Changes');
+                    ajax_toast(data.message,"info","linear-gradient(to right, #00b09b, #96c93d)");
+                    $('input[name=update_file]').prop('value', '');
+
+        }else {
+                      save_btn.prop("disabled", false);
+                      save_btn.text('Save Changes');
+                      ajax_toast(data.message,"info","red");
+                }
+
+            $('.prog_cent').attr('hidden',true);
+
+        }
+    });
+
+}
+
+
+function ajax_post(form,url,text=''){
+
+    $.ajax({
+            type: "POST",
+            url: base_url + url,
+            data: form.serialize(),
             cache: false,
-            processData:false,
             dataType: 'json',
             beforeSend: function() {
-                $('.update-aoc-cso').html('<div class="loader"></div>');
-                $('.update-aoc-cso').prop("disabled", true);
-                
+                form.find('button[type=submit]').text('Please wait...');
+                form.find('button[type=submit]').attr('disabled','disabled');
             },
+             error: function(xhr) {
+                alert("Error occured.please try again");
+                form.find('button[type=submit]').text(text);
+                form.find('button[type=submit]').removeAttr('disabled');
+            },
+
              success: function(data)
             {            
                 if (data.response) {
-                    $('#update_aoc_modal').modal('hide');
-                    $('.update-aoc-cso').prop("disabled", false);
-                    $('.update-aoc-cso').text('Save Changes');
-                        Toastify({
-                                  text: data.message,
-                                  className: "info",
-                                  style: {
-                                    "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                  }
-                                }).showToast();
-
-                        
-                           
-             
-                }else {
-                    $('.update-aoc-cso').prop("disabled", false);
-                    $('.update-aoc-cso').text('Save Changes');
-                      Toastify({
-                                  text: data.message,
-                                  className: "info",
-                                  style: {
-                                    "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                  }
-                                }).showToast();
                    
+                    form.find('button[type=submit]').text(text);
+                    form.find('button[type=submit]').removeAttr('disabled');
+                    ajax_toast(data.message,"info","linear-gradient(to right, #00b09b, #96c93d)");
+                      
+                }else {
+                    form.find('button[type=submit]').text(text);
+                    form.find('button[type=submit]').removeAttr('disabled');
+                    ajax_toast(data.message,"info","red");
                 }
            },
-            error: function(xhr) { // if error occured
-                alert("Error occured.please try again");
-                 $('.update-aoc-cso').prop("disabled", false);
-                 $('.update-aoc-cso').text('Save Changes');
-            },
 
-        })
+    });
 
+}
 
-    })
-
-
-$('#update_bylaws_form').on('submit', function(e) {
-        e.preventDefault();
-
-        
-        $.ajax({
-             type: "POST",
-            url: base_url + 'api/update-bylaws',
-            data: new FormData(this),
-            contentType: false,
-            cache: false,
-            processData:false,
-            dataType: 'json',
-            beforeSend: function() {
-                $('.btn-update-bylaws').html('<div class="loader"></div>');
-                $('.btn-update-bylaws').prop("disabled", true);
-                
-            },
-             success: function(data)
-            {            
-                if (data.response) {
-                    $('#update_bylaws_modal').modal('hide');
-                    $('.btn-update-bylaws').prop("disabled", false);
-                    $('.btn-update-bylaws').text('Save Changes');
-                        Toastify({
-                                  text: data.message,
-                                  className: "info",
-                                  style: {
-                                    "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                  }
-                                }).showToast();
-
-                        
-                           
-             
-                }else {
-                    $('.btn-update-bylaws').prop("disabled", false);
-                    $('.btn-update-bylaws').text('Save Changes');
-                      Toastify({
-                                  text: data.message,
-                                  className: "info",
-                                  style: {
-                                    "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                  }
-                                }).showToast();
-                   
-                }
-           },
-            error: function(xhr) { // if error occured
-                alert("Error occured.please try again");
-                 $('.btn-update-bylaws').prop("disabled", false);
-                 $('.btn-update-bylaws').text('Save Changes');
-            },
-
-        })
-
-
-    })
-
-
-$('#update_cor_form').on('submit', function(e) {
-        e.preventDefault();
-
-        
-        $.ajax({
-             type: "POST",
-            url: base_url + 'api/update-cor',
-            data: new FormData(this),
-            contentType: false,
-            cache: false,
-            processData:false,
-            dataType: 'json',
-            beforeSend: function() {
-                $('.update-cor-cso-save').html('<div class="loader"></div>');
-                $('.update-cor-cso-save').prop("disabled", true);
-                
-            },
-             success: function(data)
-            {            
-                if (data.response) {
-                    $('#update_cor_modal').modal('hide');
-                    $('.update-cor-cso-save').prop("disabled", false);
-                    $('.update-cor-cso-save').text('Save Changes');
-                        Toastify({
-                                  text: data.message,
-                                  className: "info",
-                                  style: {
-                                    "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                  }
-                                }).showToast();
-
-                        
-                           
-             
-                }else {
-                    $('.update-cor-cso-save').prop("disabled", false);
-                    $('.update-cor-cso-save').text('Save Changes');
-                      Toastify({
-                                  text: data.message,
-                                  className: "info",
-                                  style: {
-                                    "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                  }
-                                }).showToast();
-                   
-                }
-           },
-            error: function(xhr) { // if error occured
-                alert("Error occured.please try again");
-                 $('.update-cor-cso-save').prop("disabled", false);
-                 $('.update-cor-cso-save').text('Save Changes');
-            },
-
-        })
-
-
-    })
-
-
+ 
 $('#add_project_form').on('submit', function(e) {
     e.preventDefault();
-
-         $.ajax({
-            type: "POST",
-            url: base_url + 'api/add-project',
-            data: $(this).serialize(),
-            cache: false,
-            dataType: 'json',
-            beforeSend: function() {
-                $('.btn-add-project').text('Please wait...');
-                $('.btn-add-project').attr('disabled','disabled');
-            },
-             success: function(data)
-            {            
-                if (data.response) {
-                    $('#add_project_form')[0].reset();
-                    $('.btn-add-project').text('Submit');
-                    $('.btn-add-project').removeAttr('disabled');
-                    Toastify({
-                                text: data.message,
-                                className: "info",
-                                style: {
-                                    "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                }
-                            }).showToast();
-                        $('#project_table').DataTable().destroy();
-                            load_projects();
-                           
-                }else {
-                    $('.btn-add-project').text('Submit');
-                    $('.btn-add-project').removeAttr('disabled');
-                    Toastify({
-                                text: data.message,
-                                className: "info",
-                                style: {
-                                    "background" : "#e01c0d",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                }
-                            }).showToast();
-                }
-           },
-            error: function(xhr) { // if error occured
-                    alert("Error occured.please try again");
-                    $('.btn-add-project').text('Submit');
-                    $('.btn-add-project').removeAttr('disabled');
-            },
-
-
-        });
-
-      });
-
-
-
+    let form    = $(this);
+    let table   = $('#project_table');
+    var url     = 'api/add-project';
+    var text    = 'Submit';
+    ajax_post(form,url,text);
+    table.DataTable().destroy();
+    load_projects();
+     form[0].reset();
+});
 
 
 $('#add_officer_form').on('submit', function(e) {
     e.preventDefault();
+    let form    = $(this);
+    var url     = 'api/add-officer';
+    var text    = 'Submit';
+    ajax_post(form,url,text);
+    $('#officers_table').DataTable().destroy();
+    load_cso_officers();
+     form[0].reset();
 
-         $.ajax({
-            type: "POST",
-            url: base_url + 'api/add-officer',
-            data: new FormData(this),
-            contentType: false,
-            cache: false,
-            processData:false,
-            dataType: 'json',
-            beforeSend: function() {
-                $('.btn-add').text('Please wait...');
-                $('.btn-add').attr('disabled','disabled');
-            },
-             success: function(data)
-            {            
-                if (data.response) {
-                    $('#add_officer_form')[0].reset();
-                    $('.btn-add').text('Submit');
-                    $('.btn-add').removeAttr('disabled');
-                    Toastify({
-                                text: data.message,
-                                className: "info",
-                                style: {
-                                    "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                }
-                            }).showToast();
-                            $('#officers_table').DataTable().destroy();
-                            load_organization_chart();
-                           
-                }else {
-                    $('.btn-add').text('Submit');
-                    $('.btn-add').removeAttr('disabled');
-                    Toastify({
-                                text: data.message,
-                                className: "info",
-                                style: {
-                                    "background" : "#e01c0d",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                }
-                            }).showToast();
-                }
-           },
-            error: function(xhr) { // if error occured
-                    alert("Error occured.please try again");
-                    $('.btn-add').text('Submit');
-                    $('.btn-add').removeAttr('disabled');
-            },
-
-
-        });
-
-      });
-
-
-    
+});
 
 
 
-
-
-function load_organization_chart(){
+function load_cso_officers(){
 
    $.ajax({
             url: base_url + 'api/get-officers',
@@ -758,7 +513,7 @@ function load_organization_chart(){
                                   {
                                      extend: 'excel',
                                      text: 'Excel',
-                                     className: 'btn btn-default ',
+                                     className: 'btn btn-danger',
                                      exportOptions: {
                                         columns: 'th:not(:last-child)'
                                      }
@@ -784,7 +539,6 @@ function load_organization_chart(){
                         ],
                'columns': [
                   {
-                     // data: "song_title",
                      data: null,
                      render: function (data, type, row) {
                         return row.name;
@@ -792,7 +546,6 @@ function load_organization_chart(){
 
                   },
                   {
-                     // data: "song_title",
                      data: null,
                      render: function (data, type, row) {
                            return row.title;
@@ -800,7 +553,6 @@ function load_organization_chart(){
 
                   },
                   {
-                     // data: "song_title",
                      data: null,
                      render: function (data, type, row) {
                            return row.contact_number;
@@ -808,7 +560,6 @@ function load_organization_chart(){
 
                   },
                   {
-                     // data: "song_title",
                      data: null,
                      render: function (data, type, row) {
                            return row.email_address;
@@ -848,16 +599,11 @@ function load_organization_chart(){
 
    });
 
-// chart.load([
-//     { id: 1, name: "Denny Curtis", title: "CEO", img: "https://cdn.balkan.app/shared/2.jpg" },
-//     { id: 2, pid: 1, name: "Ashley Barnett", title: "Sales Manager", img: "https://cdn.balkan.app/shared/3.jpg" },
-//     { id: 3, pid: 2, name: "Caden Ellison", title: "Dev Manager", img: "https://cdn.balkan.app/shared/4.jpg" },
-//     { id: 4, pid: 3, name: "Elliot Patel", title: "Sales", img: "https://cdn.balkan.app/shared/5.jpg" },
-//     { id: 5, pid: 4, name: "Lynn Hussain", title: "Sales", img: "https://cdn.balkan.app/shared/6.jpg" },
-//     { id: 6, pid: 5, name: "Tanner May", title: "Developer", img: "https://cdn.balkan.app/shared/7.jpg" },
-    
-// ]);
+
 }
+
+
+
 
 
 
@@ -907,7 +653,7 @@ Swal.fire({
             )
 
                                 $('#officers_table').DataTable().destroy();
-                                 load_organization_chart();
+                                 load_cso_officers();
                                 
                                }
 
@@ -928,70 +674,22 @@ Swal.fire({
 })
 
 
-
 $('#update_cso_information_form').on('submit', function(e) {
-        e.preventDefault();
-
-         $.ajax({
-            type: "POST",
-            url: base_url + 'api/update-cso-information',
-            data: new FormData(this),
-            contentType: false,
-            cache: false,
-            processData:false,
-            dataType: 'json',
-            beforeSend: function() {
-                $('.btn-update-cso').text('Please wait...');
-                $('.btn-update-cso').attr('disabled','disabled');
-            },
-             success: function(data)
-            {            
-                if (data.response) {
-                    $('#update_cso_information_modal').modal('hide')
-                    $('.btn-update-cso').text('Save Changes');
-                    $('.btn-update-cso').removeAttr('disabled');
-                    
-                   Toastify({
-                                text: data.message,
-                                className: "info",
-                                style: {
-                                    "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                }
-                            }).showToast();
-                    
-                    get_cso_information();
-
-                }else {
-                    
-                     $('.btn-update-cso').text('Save Changes');
-                    $('.btn-update-cso').removeAttr('disabled');
-                      
-                   Toastify({
-                                text: data.message,
-                                className: "info",
-                                style: {
-                                    "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                    "height" : "60px",
-                                    "width" : "350px",
-                                    "font-size" : "20px"
-                                }
-                            }).showToast();
-                   
-                }
-           },
-            error: function(xhr) { // if error occured
-                alert("Error occured.please try again");
-                $('.btn-update-cso').text('Save Changes');
-                $('.btn-update-cso').removeAttr('disabled');
-            },
+    e.preventDefault();
+    let form    = $(this);
+    var url     = 'api/update-cso-information';
+    var text    = 'Save Changes';
+    ajax_post(form,url,text);
+    $('#update_cso_information_modal').modal('hide');
+    setTimeout(function() {get_cso_information()}, 1000);
+    ;
 
 
-        });
+});
 
-    });
+
+
+
 
 function get_cso_information(){
 
@@ -1168,7 +866,7 @@ $('#update_officer_form').on('submit', function(e) {
                                 }
                             }).showToast();
                      $('#officers_table').DataTable().destroy();
-                    load_organization_chart()
+                   load_cso_officers();
 
                 }else {
                     
@@ -1586,10 +1284,12 @@ $(document).on('click','button#generate_for_print',function (e) {
 
 
 
+$(document).ready(function(){
+   load_projects();
+    get_cso_information();
+    load_cso_officers(); 
+})
 
-load_projects();
-get_cso_information();
-load_organization_chart();
 
 
 

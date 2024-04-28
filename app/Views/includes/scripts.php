@@ -47,7 +47,7 @@
    $(document).on('click', 'a.back-button', function (e) {
       history.back();
    });
-   count_total_reffered_rfa();
+   
 
    function count_total_rfa_pending() {
       $.ajax({
@@ -60,7 +60,7 @@
          }
       })
    }
-   count_total_rfa_pending();
+  
 
    function load_total_pending_transactions() {
       $.ajax({
@@ -73,7 +73,7 @@
          }
       })
    }
-   load_total_pending_transactions();
+   
    $(document).on('click', 'a#add_transactions', function (e) {
       window.open(base_url + 'user/pending-transactions/add-transaction', '_self');
    });
@@ -167,76 +167,7 @@
       $('.settings-btn').toggleClass('active');
    });
 
-   function slider_area() {
-      var owl = $('.testimonial-carousel').owlCarousel({
-         margin: 50,
-         loop: true,
-         autoplay: false,
-         nav: false,
-         dots: true,
-         responsive: {
-            0: {
-               items: 1
-            },
-            450: {
-               items: 1
-            },
-            768: {
-               items: 2
-            },
-            1000: {
-               items: 2
-            },
-            1360: {
-               items: 1
-            },
-            1600: {
-               items: 2
-            }
-         }
-      });
-   }
-   slider_area();
-   if ($('#full-view').length) {
-      var requestFullscreen = function (ele) {
-         if (ele.requestFullscreen) {
-            ele.requestFullscreen();
-         } else if (ele.webkitRequestFullscreen) {
-            ele.webkitRequestFullscreen();
-         } else if (ele.mozRequestFullScreen) {
-            ele.mozRequestFullScreen();
-         } else if (ele.msRequestFullscreen) {
-            ele.msRequestFullscreen();
-         } else {
-            console.log('Fullscreen API is not supported.');
-         }
-      };
-      var exitFullscreen = function () {
-         if (document.exitFullscreen) {
-            document.exitFullscreen();
-         } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-         } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-         } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-         } else {
-            console.log('Fullscreen API is not supported.');
-         }
-      };
-      var fsDocButton = document.getElementById('full-view');
-      var fsExitDocButton = document.getElementById('full-view-exit');
-      fsDocButton.addEventListener('click', function (e) {
-         e.preventDefault();
-         requestFullscreen(document.documentElement);
-         $('body').addClass('expanded');
-      });
-      fsExitDocButton.addEventListener('click', function (e) {
-         e.preventDefault();
-         exitFullscreen();
-         $('body').removeClass('expanded');
-      });
-   };
+
    jQuery(document).ready(function () {
       jQuery('.form-wizard-next-btn').click(function () {
          var parentFieldset = jQuery(this).parents('.wizard-fieldset');
@@ -335,49 +266,26 @@
    });
 
 
+   
+   function ajax_toast(message,type,background){
 
-   function back_up_database() {
-
-      $.ajax({
-         url: base_url + 'api/back-up-db',
-         type: "POST",
-         beforeSend: function () {
-            $('.back-up-database').text('Please wait...');
-            $('.back-up-database').prop("disabled", true);
-         },
-         dataType: 'json',
-         success: function (data) {
-            if (data.response) {
-
-               $('.back-up-database').prop("disabled", false);
-               $('.back-up-database').text('Back up Now');
-
-               Toastify({
-                  text: data.message,
-                  className: "info",
-                  style: {
-                     "background": "linear-gradient(to right, #00b09b, #96c93d)",
-                     "height": "60px",
-                     "width": "350px",
-                     "font-size": "20px"
-                  }
-               }).showToast();
-            } else {
-               alert('error back-up')
-            }
-         }
-      });
-   }
-
-
-   function scheduleBackUp() {
-
-      setInterval(back_up_database, 6 * 60 * 60 * 1000);
+      Toastify({
+               text: message,
+               className: type,
+               style: {
+                        "background" : background,
+                        "height" : "60px",
+                        "width" : "350px",
+                        "font-size" : "20px"
+               }}).showToast();
 
    }
+
 
    $(document).ready(function () {
-
-      scheduleBackUp();
+      
+      count_total_reffered_rfa();
+      count_total_rfa_pending();
+      load_total_pending_transactions();
    })
 </script>

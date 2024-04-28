@@ -25,12 +25,12 @@
                </div>
                <div class="form-group">
                   <div class="col-12">Middle Name<span class="text-danger">*</span></div>
-                  <input type="text" class="form-control input" name="middle_name"  placeholder="" required>
+                  <input type="text" class="form-control input" name="middle_name"  placeholder="" >
                </div>
                
                <div class="form-group">
                     <div class="col-12">Last Name<span class="text-danger">*</span></div>
-                  <input type="text" class="form-control input" name="last_name"  placeholder="">
+                  <input type="text" class="form-control input" name="last_name"  placeholder="" required>
                </div>
                <div class="form-group">
                     <div class="col-12">Extension<span class="text-danger">*</span></div>
