@@ -100,6 +100,7 @@ $(document).on('change', 'select#type_of_activity_select', function (e) {
          error: err => {
             console.log(err);
             alert("An error occured");
+            JsLoadingOverlay.hide();
          },
          success: function (result) {
             if (text == '<?php echo $training_text ?>') {

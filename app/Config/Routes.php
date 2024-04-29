@@ -145,12 +145,7 @@ $routes->group('api', ['filter' => 'authGuard'], function($routes) {
     $routes->post('update-cso-status', 'api\Cso::update_cso_status');
 
     $routes->post('upload-cso-file', 'api\Cso::upload_cso_file');
-
-    
-    $routes->post('get-cor', 'api\Cso::get_cso_cor');
-    $routes->post('get-bylaws', 'api\Cso::get_cso_bylaws');
-    $routes->post('get-aoc', 'api\Cso::get_cso_aoc');
-
+    $routes->get('get-file', 'api\Cso::get_cso_file');
 
 
     //CSO Officers

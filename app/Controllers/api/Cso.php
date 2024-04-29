@@ -424,11 +424,28 @@ public function update_cso_status(){
 }
 
 
+public function get_cso_file(){
 
-public function get_cso_cor(){
+    $type = $_GET['type'];
+    $id   = $_GET['id'];
+    $path = '';
+    $file_type = '';
+    switch ($type) {
 
-     $path = FCPATH ."uploads/cso_files/".$this->request->getPost('id').'/'.$this->config->folder_name['cor_folder_name'];
+        case 'cor':
+            $file_type = $this->config->folder_name['cor_folder_name'];
+            break;
 
+        case 'bylaws':
+            $file_type = $this->config->folder_name['bylaws_folder_name'];
+            break;
+
+        case 'articles':
+            $file_type = $this->config->folder_name['aoc_folder_name'];
+            break;
+    }
+
+    $path = FCPATH ."uploads/cso_files/".$id.'/'.$file_type;
 
     if (is_dir($path)) {
         
@@ -436,7 +453,7 @@ public function get_cso_cor(){
 
          $data = array(
 
-                'file' => './../../uploads/cso_files/'.$this->request->getPost('id').'/'.$this->config->folder_name['cor_folder_name'].'/'.$file,
+                'file' => base_url().'uploads/cso_files/'.$id.'/'.$file_type.'/'.$file,
                 'resp' => true,
                 'message' => ''
          );
@@ -457,80 +474,12 @@ public function get_cso_cor(){
 
     echo json_encode($data);
 
-}
-
-
-
-public function get_cso_bylaws(){
-
-     $path = FCPATH ."uploads/cso_files/".$this->request->getPost('id').'/'.$this->config->folder_name['bylaws_folder_name'];
-
-
-    if (is_dir($path)) {
-        
-         $file = scandir($path)[2];
-
-         $data = array(
-
-                'file' => './../../uploads/cso_files/'.$this->request->getPost('id').'/'.$this->config->folder_name['bylaws_folder_name'].'/'.$file,
-                'resp' => true,
-                'message' => ''
-         );
-         
-        
-    }else {
-
-          $data = array(
-
-                'file' => '',
-                'resp' => false,
-                'message' => 'Please update Bylaws file'
-         );
-       
-
-    }
-
-
-    echo json_encode($data);
 
 }
 
 
 
 
-public function get_cso_aoc(){
-
-     $path = FCPATH ."uploads/cso_files/".$this->request->getPost('id').'/'.$this->config->folder_name['aoc_folder_name'];
-
-
-    if (is_dir($path)) {
-        
-         $file = scandir($path)[2];
-
-         $data = array(
-
-                'file' => './../../uploads/cso_files/'.$this->request->getPost('id').'/'.$this->config->folder_name['aoc_folder_name'].'/'.$file,
-                'resp' => true,
-                'message' => ''
-         );
-         
-        
-    }else {
-
-          $data = array(
-
-                'file' => '',
-                'resp' => false,
-                'message' => 'Please update AOC/AOI file'
-         );
-       
-
-    }
-
-
-    echo json_encode($data);
-
-}
 
 
 public function upload_cso_file(){

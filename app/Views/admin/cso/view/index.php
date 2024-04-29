@@ -75,233 +75,45 @@
       <script>
 
 
+$(document).on('click', 'a.view-pdf', function (e) {
+
+   $.ajax({
+      type: "GET",
+      url: base_url + 'api/get-file?type=' + $(this).data('type')+'&&id=<?php echo $_GET['id'] ?>',
+      cache: false,
+      dataType: 'json',
+      beforeSend: function () {
+         $('#view_cor').html('<div class="loader"></div>');
+          JsLoadingOverlay.show({
+               'overlayBackgroundColor': '#666666',
+               'overlayOpacity': 0.6,
+               'spinnerIcon': 'ball-atom',
+               'spinnerColor': '#000',
+               'spinnerSize': '2x',
+               'overlayIDName': 'overlay',
+               'spinnerIDName': 'spinner',
+            });
+      },
+      success: function (data) {
+         if (data.resp) {
+            $('#view_file_modal').modal('show');
+            $('.pdf-viewer').html('<iframe src="'+data.file+'" style="width:100%;height:900px;"></iframe>');
+         } else {
+           JsLoadingOverlay.hide();
+            alert('data')
+         }
+         $('#view_cor').html('View COR');
+         
+      },
+      error: function () {
+         alert('Server Error!');
+         $('#view_cor').html('View COR');
+          JsLoadingOverlay.hide();
+      }
+
+   });
 
 
-const template = document.createElement('template');
-template.innerHTML = '\
-  <iframe frameborder="0" \
-    width="1720" \
-    height="900">\
-  </iframe>\
-';
-
-class PdfViewer extends HTMLElement {
-  constructor() {
-    super()
-    const shadowRoot = this.attachShadow({mode: 'open'});
-    shadowRoot.appendChild(template.content.cloneNode(true));
-
-  }
-  get observedAttributes() {
-    return ['src']
-  }
-  connectedCallback() {
-    this.updateIframeSrc()
-  }
-  attributeChangedCallback(name) {
-    if (['src', 'viewerPath'].includes(name)) {
-      this.updateIframeSrc()
-    }
-  }
-  updateIframeSrc() {
-    this.shadowRoot.querySelector('iframe').setAttribute(
-      'src', 
-        './../../uploads/cso_files/150/cor/Programming for Intermediate Users Using Python.pdf'
-    )
-  }
-}
-
-
-
-
-$(document).on('click','a#view_cor',function (e) {
-
-    $('#view_file_modal').modal('show');
-    window.customElements.define('pdf-viewer', PdfViewer)
-
-});
-
-
-
-// $(document).on('click','a#view_cor',function (e) {
-
-//     $('#view_cor').html('<div class="loader"></div>');
-
-//          setTimeout(() => {
-
-//           $.ajax({
-//                             type: "POST",
-//                             url: base_url + 'api/get-cor',
-//                             data : {'id' : '<?php echo $_GET['id'] ?>'},
-//                             cache: false,
-//                             dataType: 'json', 
-//                             // beforeSend :  function(){
-
-//                             //         $('#view_cor').html('<div class="loader"></div>');
-//                             // },
-//                             success: function(data){
-
-//                                 if (data.resp) {
-
-//                                      $('#view_file_modal').modal('show');
-//                                     pdf = data.file;
-
-//                                     console.log(pdf)
-//                                    pdfjsLib.getDocument(pdf).then((pdf) => {  
-
-                                       
-//                                         myState.pdf = pdf;
-//                                         render();
-//                                     });
-
-
-//                                    $("a.download-file").attr("href", pdf)
-//                                     $('#view_cor').html('View COR');
-
-//                                 }else {
-
-//                                      Toastify({
-//                                               text: data.message,
-//                                               className: "info",
-//                                               style: {
-//                                                 "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-//                                                 "height" : "60px",
-//                                                 "width" : "350px",
-//                                                 "font-size" : "20px"
-//                                               }
-//                                             }).showToast();
-                                    
-//                                     $('#view_cor').html('View COR');
-//                                 }
-                                       
-//                             }, error : function(){
-
-//                                     alert('error');
-//                                      $("a.download-file").attr("href", data.file)
-//                                     $('#view_cor').html('View COR');
-
-//                             }
-
-//                     })
-
-
-//            }, 500)
-
-     
-    
-// });
-
-
-
-$(document).on('click','a#view_bylaws',function (e) {
-
- $('#view_bylaws').html('<div class="loader"></div>');
-
-  setTimeout(() => {
-
-          $.ajax({
-                            type: "POST",
-                            url: base_url + 'api/get-bylaws',
-                            data : {'id' : '<?php echo $_GET['id'] ?>'},
-                            cache: true,
-                            dataType: 'json', 
-                            // beforeSend :  function(){
-
-                            //         $('#view_bylaws').html('<div class="loader"></div>');
-                            // },
-                            success: function(data){
-
-                                if (data.resp) {
-
-                                     $('#view_file_modal').modal('show');
-                                    pdf = data.file
-                                   pdfjsLib.getDocument(pdf).then((pdf) => {    
-                                        myState.pdf = pdf;
-                                        render();
-                                    });
-                                   $("a.download-file").attr("href", data.file)
-                                    $('#view_bylaws').html('View Bylaws');
-
-                                }else {
-
-                                     Toastify({
-                                              text: data.message,
-                                              className: "info",
-                                              style: {
-                                                "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                                "height" : "60px",
-                                                "width" : "350px",
-                                                "font-size" : "20px"
-                                              }
-                                            }).showToast();
-                                    
-                                    $('#view_bylaws').html('View Bylaws');
-                                }
-                                       
-                            }
-
-                    })
-
-        }, 500)
-    
-});
-
-
-
-
-
-
-$(document).on('click','a#view_aoc',function (e) {
-
-     $('#view_aoc').html('<div class="loader"></div>');
-
-  setTimeout(() => {
-
-          $.ajax({
-                            type: "POST",
-                            url: base_url + 'api/get-aoc',
-                            data : {'id' : '<?php echo $_GET['id'] ?>'},
-                            cache: true,
-                            dataType: 'json', 
-                            // beforeSend :  function(){
-
-                            //         $('#view_aoc').html('<div class="loader"></div>');
-                            // },
-                            success: function(data){
-
-                                if (data.resp) {
-
-                                     $('#view_file_modal').modal('show');
-                                    pdf = data.file
-                                   pdfjsLib.getDocument(pdf).then((pdf) => {    
-                                        myState.pdf = pdf;
-                                        render();
-                                    });
-                                   $("a.download-file").attr("href", data.file)
-                                    $('#view_aoc').html('View Bylaws');
-
-                                }else {
-
-                                     Toastify({
-                                              text: data.message,
-                                              className: "info",
-                                              style: {
-                                                "background" : "linear-gradient(to right, #00b09b, #96c93d)",
-                                                "height" : "60px",
-                                                "width" : "350px",
-                                                "font-size" : "20px"
-                                              }
-                                            }).showToast();
-                                    
-                                    $('#view_aoc').html('View Bylaws');
-                                }
-                                       
-                            }
-
-                    })
-
-       }, 500)
-    
 });
 
 
@@ -483,7 +295,7 @@ $('#add_officer_form').on('submit', function(e) {
     e.preventDefault();
     let form    = $(this);
     var url     = 'api/add-officer';
-    var text    = 'Submit';
+    var text    = 'Save Changes';
     ajax_post(form,url,text);
     $('#officers_table').DataTable().destroy();
     load_cso_officers();
