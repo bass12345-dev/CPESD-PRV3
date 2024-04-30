@@ -96,6 +96,7 @@ $(document).on('click', 'a.view-pdf', function (e) {
       },
       success: function (data) {
          if (data.resp) {
+            JsLoadingOverlay.hide();
             $('#view_file_modal').modal('show');
             $('.pdf-viewer').html('<iframe src="'+data.file+'" style="width:100%;height:900px;"></iframe>');
          } else {
@@ -224,7 +225,8 @@ function _ajax_file(url='',form,save_btn=''){
                     save_btn.prop("disabled", false);
                     save_btn.text('Save Changes');
                     ajax_toast(data.message,"info","linear-gradient(to right, #00b09b, #96c93d)");
-                    $('input[name=update_file]').prop('value', '');
+                    $('input[name=update_file]').val('')
+                   
 
         }else {
                       save_btn.prop("disabled", false);
