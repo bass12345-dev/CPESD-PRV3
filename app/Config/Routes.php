@@ -283,21 +283,24 @@ $routes->group('api', ['filter' => 'authGuard'], function($routes) {
     $routes->post('l-g-c-b-m', 'api\Clients::load_gender_client_by_month');
 
     //RFA
+    //Users
     $routes->post('add-rfa', 'api\PendingRFATransactions::add_rfa');
-    $routes->post('get-all-rfa-transactions', 'api\CompletedRFATransactions::get_all_rfa_transactions');
+    $routes->post('update-referral', 'api\PendingRFATransactions::update_referral');
     $routes->post('get-user-pending-rfa', 'api\PendingRFATransactions::get_user_pending_rfa_transactions');
-
     $routes->post('update-rfa', 'api\PendingRFATransactions::update_rfa');
-
     $routes->post('get-user-pending-rfa', 'api\PendingRFATransactions::get_user_pending_rfa_transactions');
+    $routes->post('get-user-reffered-rfa', 'api\PendingRFATransactions::get_user_referred_rfa');
 
+
+
+    $routes->post('get-all-rfa-transactions', 'api\CompletedRFATransactions::get_all_rfa_transactions');
     $routes->post('view-action', 'api\PendingRFATransactions::view_action');
     $routes->post('view-action-taken', 'api\PendingRFATransactions::view_action_taken');
 
 
     $routes->post('approved-rfa', 'api\PendingRFATransactions::approved_rfa');
 
-    $routes->post('get-user-reffered-rfa', 'api\PendingRFATransactions::get_user_referred_rfa');
+    
     $routes->post('count-reffered-rfa', 'api\PendingRFATransactions::count_reffered_rfa');
     $routes->post('accomplish-rfa', 'api\PendingRFATransactions::accomplished');
 

@@ -27,6 +27,7 @@ class PendingRFAController extends BaseController
         
         if (session()->get('user_type') == 'user') {
         $data['title'] = 'Pending RFA';
+        $data['refer_to']                   = $this->CustomModel->getReferto();
         return view('user/rfa/pending/index',$data);
         }else {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
