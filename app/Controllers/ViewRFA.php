@@ -17,7 +17,7 @@ class ViewRFA extends BaseController
     public function index()
     {
         $data['transaction_data']                             = $this->CustomModel->getwhere($this->rfa_transactions_table,array('rfa_id' => $_GET['id']))[0];
-        $data['title']                   = 'REFERENCE NO '.date('Y', strtotime($data['transaction_data']->rfa_date_filed)).' - '.date('m', strtotime($data['transaction_data']->rfa_date_filed)).' - '.$data['transaction_data']->number;
+        $data['title']                   = 'REFERENCE NO '.date('Y', strtotime($data['transaction_data']->rfa_date_filed)).'-'.date('m', strtotime($data['transaction_data']->rfa_date_filed)).'-'.$data['transaction_data']->number;
         return view('global/view_rfa/index',$data);
     }
 }

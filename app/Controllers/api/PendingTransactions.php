@@ -18,6 +18,7 @@ class PendingTransactions extends BaseController
     private $training_table              = 'trainings';
     private $project_monitoring_table    = 'project_monitoring';
     private $project_meeting_table       = 'project_meeting';
+    private $activity_logs_table              = 'activity_logs';
     private $cso_table                   = 'cso';
     private $order_by_desc               = 'desc';
     private $order_by_asc                = 'asc';
@@ -34,7 +35,7 @@ class PendingTransactions extends BaseController
        $this->CustomModel               = new CustomModel($this->db); 
        $this->TransactionModel          = new TransactionModel($this->db); 
        $this->request                   = \Config\Services::request();  
-        $this->config = new Custom_config;
+       $this->config = new Custom_config;
         
        
     }
@@ -112,14 +113,9 @@ class PendingTransactions extends BaseController
 
    }
   
-
-
-
-
-
-
-
-
+   private function pmas_number($row){
+        return date('Y', strtotime($row->date_and_time_filed)).' - '.date('m', strtotime($row->date_and_time_filed)).' - '.$row->number;
+    }
 
     public function add_transaction(){
 
@@ -309,6 +305,19 @@ class PendingTransactions extends BaseController
 
 
             }
+
+
+            $item        = $this->CustomModel->getwhere($this->transactions_table,array('transaction_id' => $id))[0]; 
+            $action_logs = array(
+                            'user_id'               => session()->get('user_id'),
+                            'type'                  => 'pmas',
+                            '_id'                   => $id,
+                            'action'                => 'Added PMAS No. '.$this->pmas_number($item),
+                            'activity_log_created'  => $now->format('Y-m-d H:i:s'),
+                );
+
+            $this->CustomModel->addData($this->activity_logs_table,$action_logs);
+
             $resp = array(
 				'message' => 'Successfully Added',
 				'response' => true
@@ -342,10 +351,7 @@ public function update_transaction(){
 
         $now = new \DateTime();
         $now->setTimezone(new \DateTimezone('Asia/Manila'));
-
-
         $where = array('transaction_id' => $this->request->getPost('transaction_id'));
-
         $data = array(
                 
                 'responsible_section_id'    =>$this->request->getPost('update_responsible_section_id'),
@@ -358,10 +364,7 @@ public function update_transaction(){
                 'updated_on'                => $now->format('Y-m-d H:i:s'),
                 'update_status'             => 'updated' 
         );
-    
-
         $result         = $this->CustomModel->updatewhere($where,$data,$this->transactions_table);
-
         if ($result) {
 
             $type_act_name  =  $this->CustomModel->getwhere($this->type_of_activity_table,array('type_of_activity_id ' => $data['type_of_activity_id']))[0]->type_of_activity_name;
@@ -701,6 +704,17 @@ public function update_transaction(){
 
             }
 
+
+
+            $item        = $this->CustomModel->getwhere($this->transactions_table,array('transaction_id' => $where['transaction_id']))[0]; 
+            $action_logs = array(
+                            'user_id'               => session()->get('user_id'),
+                            'type'                  => 'pmas',
+                            '_id'                   => $item->transaction_id,
+                            'action'                => 'Updated PMAS No. '.$this->pmas_number($item),
+                            'activity_log_created'  => $now->format('Y-m-d H:i:s'),
+            );
+            $this->CustomModel->addData($this->activity_logs_table,$action_logs);
              $resp = array(
                 'message' => 'Successfully Updated',
                 'response' => true
@@ -742,7 +756,7 @@ public function get_admin_pending_transaction_limit(){
 
         $data[] = array(
                             'transaction_id'        => $row->transaction_id,
-                            'pmas_no'               => date('Y', strtotime($row->date_and_time_filed)).' - '.date('m', strtotime($row->date_and_time_filed)).' - '.$row->number,
+                            'pmas_no'               => $this->pmas_number($row),
                             'date_and_time_filed'   => date('F d Y', strtotime($row->date_and_time_filed)).' '.date('h:i a', strtotime($row->date_and_time_filed)),
                             'responsible_section'   => $row->responsible_section_name,
                             'type_of_activity_name' => $row->type_of_activity_name,
