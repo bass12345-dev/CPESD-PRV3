@@ -57,14 +57,27 @@
                                     $('input[name=name_of_client]').val(data.client_name);
 
                                     $('select[name=type_of_request]').val(data.tor_id);
-
                                     $('select[name=type_of_transaction]').val(data.type_of_transaction);
+
+                                    if (data.type_of_transaction == 'simple') {
+
+                                      $('#refer_to').attr('hidden', false);
+                                      $('select[name=refer_to_id]').val(data.reffered_to);
+
+                                    }
 
 
                                     
                                     
                                  
-                                 }
+                                 },
+
+                            error : function(xhr,error) {
+
+                              alert('Server Error!')
+
+                            }
+
                         })
 
 
@@ -73,7 +86,7 @@
                             
 
 
-         load_rfa_data();
+         
 
 
                $('#add_client_form').on('submit', function(e) {
@@ -373,6 +386,17 @@ $('#update_rfa_form').on('submit', function(e) {
     
 });
 
+$(document).on('change', 'select[name=type_of_transaction]' , function() {
+   if($('select[name=type_of_transaction]').val() == 'simple'){
+      $('#refer_to').attr('hidden', false)
+   }else {
+      $('#refer_to').attr('hidden', true)
+   }
+});
+
+$(document).ready(function() {
+  load_rfa_data();
+})
       </script>
    </body>
 </html>

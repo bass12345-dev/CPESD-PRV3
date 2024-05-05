@@ -142,6 +142,12 @@ class CustomModel extends Model
 
     }
 
+    public function search_names($search){
+        $builder  = $this->db->query("SELECT * FROM `rfa_clients` WHERE CONCAT(first_name,' ',last_name) LIKE  '%".$search."%'");
+        $query = $builder->getResult();
+        return $query;
+    }
+
 
      public function count_search($table,$data){
 

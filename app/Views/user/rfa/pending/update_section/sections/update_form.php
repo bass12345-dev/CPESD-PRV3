@@ -62,6 +62,20 @@
                <div class="wizard-form-error"></div>
             </div>
 
+             <div class="form-group" id="refer_to" hidden>
+
+               <select class="custom-select input responsibility wizard-required" id="refer_to_id" name="refer_to_id" style="width: 100%;" >
+                  <option value="">Refer to</option>
+
+                  <?php foreach ($refer_to as $row) { ?>
+                     <option value="<?php echo $row->user_id ?>"><?php echo $row->first_name . ' ' . $row->last_name; ?></option>
+                  <?php } ?>
+               </select>
+
+
+            </div>
+
+
              
                   <div class="form-group clearfix">
                      <button type="submit" class="form-wizard-submit float-right btn-add-rfa"> Submit</button> <a href="javascript:;" class="form-wizard-previous-btn float-left">Previous</a> 

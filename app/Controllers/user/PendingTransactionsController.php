@@ -8,13 +8,13 @@ use App\Models\TransactionModel;
 
 class PendingTransactionsController extends BaseController
 {
-    public $transactions_table               = 'transactions';
-    public $responsible_section_table        = 'responsible_section';
-    public $responsibility_center_table      = 'responsibility_center';
-    public $activity_table                   = 'type_of_activities';
-    public $cso_table                        = 'cso';
-    public $order_by_desc                    = 'desc';
-    public $order_by_asc                     = 'asc';
+    private $transactions_table               = 'transactions';
+    private $responsible_section_table        = 'responsible_section';
+    private $responsibility_center_table      = 'responsibility_center';
+    private $activity_table                   = 'type_of_activities';
+    private $cso_table                        = 'cso';
+    private $order_by_desc                    = 'desc';
+    private $order_by_asc                     = 'asc';
     protected $request;
     protected $CustomModel;
     protected $TransactionModel;

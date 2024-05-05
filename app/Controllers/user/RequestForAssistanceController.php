@@ -8,9 +8,9 @@ use App\Models\CustomModel;
 
 class RequestForAssistanceController extends BaseController
 {
-    public    $type_of_request_table    = 'type_of_request';
-    public    $order_by_desc                = 'desc';
-    public    $order_by_asc                 = 'asc';
+    private    $type_of_request_table    = 'type_of_request';
+    private    $order_by_desc                = 'desc';
+    private    $order_by_asc                 = 'asc';
     protected $request;
     protected $CustomModel;
     public $config;
@@ -31,9 +31,9 @@ class RequestForAssistanceController extends BaseController
         $data['title']                      = 'Request For Assistance';
         $data['barangay']                   = $this->config->barangay;
         $data['employment_status']          = $this->config->employment_status;
-        $data['type_of_request'] = $this->CustomModel->get_all_desc($this->type_of_request_table,'type_of_request_name',$this->order_by_desc);
-        $data['type_of_transactions']          = $this->config->type_of_transactions;
-        $data['refer_to']           = $this->CustomModel->getReferto();
+        $data['type_of_request']            = $this->CustomModel->get_all_desc($this->type_of_request_table,'type_of_request_name',$this->order_by_desc);  
+        $data['type_of_transactions']       = $this->config->type_of_transactions;
+        $data['refer_to']                   = $this->CustomModel->getReferto();
         return view('user/request_for_assistance/index',$data);
 
         }else {

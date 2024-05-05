@@ -23,28 +23,30 @@ class CompletedRFATransactions extends BaseController
        $this->RFAModel                      = new RFAModel($db); 
        $this->request                       = \Config\Services::request();  
     }
+
+
+    private function ref_number($item){
+
+        return date('Y', strtotime($item->rfa_date_filed)).'-'.date('m', strtotime($item->rfa_date_filed)).'-'.$item->number;
+
+    }
   
      public function get_all_rfa_transactions(){
 
 
         $data                               = [];
-
         $items                              = $this->RFAModel->getAllRFATransactions('rfa_date_filed',$this->order_by_desc); 
         foreach ($items as $row ) {
-
         $data[]                     = array(
                             'rfa_id '           => $row->rfa_id,
-                            'ref_number'        => date('Y', strtotime($row->rfa_date_filed)).' - '.date('m', strtotime($row->rfa_date_filed)).' - '.$row->number,
+                            'ref_number'        => $this->ref_number($row),
                             'rfa_date_filed'    => date('M,d Y', strtotime($row->rfa_date_filed)).' '.date('h:i a', strtotime($row->rfa_date_filed)),
                             'name'              => $row->first_name.' '.$row->middle_name.' '.$row->last_name.' '.$row->extension
 
                 );
-            # code...
         }
 
         echo json_encode($data);
-
-
      }
 
 
@@ -134,7 +136,6 @@ class CompletedRFATransactions extends BaseController
 
         foreach ($items as $row ) {
 
-                $ref_number                 = date('Y', strtotime($row->rfa_date_filed)).' - '.date('m', strtotime($row->rfa_date_filed)).' - '.$row->number;
                 $client                     = $this->CustomModel->getwhere($this->client_table,array('rfa_client_id' => $row->client_id))[0];
 
                 $data[]                     = array(
@@ -145,7 +146,7 @@ class CompletedRFATransactions extends BaseController
                         'type_of_transaction'   => $row->type_of_transaction,
                         'address'               => $client->purok == 0 ? $client->barangay : 'Purok '.$client->purok.' '.$client->barangay,
                    
-                         'ref_number'           => $ref_number,
+                         'ref_number'           => $this->ref_number($row),
                          'created_by'           => $row->first_name.' '.$row->middle_name.' '.$row->last_name.' '.$row->extension,
 
 
@@ -171,8 +172,7 @@ class CompletedRFATransactions extends BaseController
         $data                               = [];
 
         foreach ($items as $row ) {
-
-                $ref_number                 = date('Y', strtotime($row->rfa_date_filed)).' - '.date('m', strtotime($row->rfa_date_filed)).' - '.$row->number;
+            
                 $client                     = $this->CustomModel->getwhere($this->client_table,array('rfa_client_id' => $row->client_id))[0];
 
                 $data[]                     = array(
@@ -183,7 +183,7 @@ class CompletedRFATransactions extends BaseController
                         'type_of_transaction'   => $row->type_of_transaction,
                         'address'               => $client->purok == 0 ? $client->barangay : 'Purok '.$client->purok.' '.$client->barangay,
                    
-                         'ref_number'           => $ref_number,
+                         'ref_number'           => $this->ref_number($row),
                          'created_by'           => $row->first_name.' '.$row->middle_name.' '.$row->last_name.' '.$row->extension,   
                 );
 

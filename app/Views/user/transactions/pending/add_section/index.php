@@ -70,7 +70,7 @@ function get_last_pmas_number() {
       }
    });
 }
-get_last_pmas_number();
+
 $(document).on('change', 'select#type_of_activity_select', function (e) {
    $("#select_under_type option").remove();
    var id = $('#type_of_activity_select').find('option:selected').val();
@@ -293,7 +293,7 @@ function list_all_transactions() {
       }
    })
 }
-list_all_transactions();
+
 $(document).on('click', 'a#reload_all_transactions', function (e) {
    $('#new_transactions_table').DataTable().destroy();
    get_last_pmas_number();
@@ -308,6 +308,12 @@ function checkNumbersOnly(myfield) {
       myfield.val(myfield.val().replace(/[^\d\.]/g, ''));
    }
 }
+
+
+$(document).ready(function() {
+   get_last_pmas_number();
+   list_all_transactions();
+});
 
 
 

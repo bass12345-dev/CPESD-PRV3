@@ -3,7 +3,7 @@
       <table class="tablesaw table-bordered table-hover table" >
          <tr>
             <td colspan = "2">
-               <a  href    = "javascript:;" class = "mt-2  mb-2 btn sub-button text-center  btn-rounded btn-md btn-block"><i class = "fa fa-user" aria-hidden = "true"></i>RFA Information</a>
+               <a  href    = "javascript:;" class = "mt-2  mb-2 btn sub-button text-center  btn-rounded btn-md btn-block">RFA Information</a>
            
             </td>
          </tr>
