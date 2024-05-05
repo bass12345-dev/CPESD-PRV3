@@ -62,9 +62,10 @@
                                     if (data.type_of_transaction == 'simple') {
 
                                       $('#refer_to').attr('hidden', false);
-                                      $('select[name=refer_to_id]').val(data.reffered_to);
-
+                            
                                     }
+
+                                    $('select[name=refer_to_id]').val(data.reffered_to);
 
 
                                     

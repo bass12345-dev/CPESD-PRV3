@@ -67,8 +67,11 @@ function load_user_pending_rfa() {
       }, {
          data: "type_of_transaction",
       }, {
-         data: "status1",
+         data: "date_time_filed",
       }, {
+         data: "status1",
+      },
+      {
          data: "action1",
       }, ]
    });
