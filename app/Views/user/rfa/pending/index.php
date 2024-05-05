@@ -51,11 +51,13 @@ function load_user_pending_rfa() {
    $('#rfa_pending_table').DataTable({
       responsive: false,
       "ordering": false,
+      
       "ajax": {
          "url": base_url + 'api/get-user-pending-rfa',
          "type": "POST",
          "dataSrc": "",
       },
+
       'columns': [{
          data: "ref_number",
       }, {
