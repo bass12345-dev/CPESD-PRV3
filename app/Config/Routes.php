@@ -146,6 +146,8 @@ $routes->group('api', ['filter' => 'authGuard'], function($routes) {
     $routes->post('update-cso-information', 'api\Cso::update_cso_information');
     $routes->post('update-cso-status', 'api\Cso::update_cso_status');
 
+    $routes->post('cso-activities-data', 'api\Cso::cso_activities_data');
+
     $routes->post('upload-cso-file', 'api\Cso::upload_cso_file');
     $routes->get('get-file', 'api\Cso::get_cso_file');
 

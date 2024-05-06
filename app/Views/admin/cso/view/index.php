@@ -41,7 +41,7 @@
                         <div class="row">
                            <div class="col-md-12">
                                 <?php echo view('admin/cso/view/sections/cso_information'); ?>  
-                                
+                                <?php echo view('admin/cso/view/sections/project_implemented'); ?>  
                               </div>
                            </div>   
                         </div>
@@ -75,6 +75,53 @@
       <script>
 
 
+var year = $('#admin_year option:selected').val();
+
+function load_graph($this) {
+   load_cso_chart($this.value)
+}
+
+function load_cso_chart(year) {
+   $.ajax({
+      url: base_url + 'api/cso-activities-data',
+      data: {
+         year: year,
+         cso_id : $('input[name=cso_id]').val()
+      },
+      method: 'POST',
+      dataType: 'json',
+       beforeSend: function () {
+         
+          JsLoadingOverlay.show({
+               'overlayBackgroundColor': '#666666',
+               'overlayOpacity': 0.6,
+               'spinnerIcon': 'ball-atom',
+               'spinnerColor': '#000',
+               'spinnerSize': '2x',
+               'overlayIDName': 'overlay',
+               'spinnerIDName': 'spinner',
+            });
+      },
+      success: function (data) {
+        JsLoadingOverlay.hide();
+        var items = '';
+        data.label.forEach((row,index) => {
+            items += '<li class="list-group-item ">'+row+'</li>';
+        });
+
+        $('ul.list-group').html(items)
+      },
+      error: function (xhr, status, error) {},
+   });
+}
+
+$(document).ready(function(){
+   load_cso_chart(year);
+});
+
+
+
+
 $(document).on('click', 'a.view-pdf', function (e) {
 
    $.ajax({
@@ -101,7 +148,7 @@ $(document).on('click', 'a.view-pdf', function (e) {
             $('.pdf-viewer').html('<iframe src="'+data.file+'" style="width:100%;height:900px;"></iframe>');
          } else {
            JsLoadingOverlay.hide();
-            alert('data')
+           ajax_toast(data.message,"info","red");
          }
          $('#view_cor').html('View COR');
          

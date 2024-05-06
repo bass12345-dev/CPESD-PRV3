@@ -16,6 +16,7 @@ class Cso extends BaseController
     private $order_by_desc                = 'desc';
     private $order_by_asc                 = 'asc';
     private $activity_logs_table         = 'activity_logs';
+    private $activities_table           = 'type_of_activities';
     protected $request;
     protected $CustomModel;
     public $config;
@@ -29,7 +30,12 @@ class Cso extends BaseController
        $this->config = new Custom_config;
     }
 
-    public function add_cso()
+
+            # CSO INFORMATION #
+
+#CREATE SECTION
+
+public function add_cso()
     {
     if ($this->request->isAJAX()) {
 
@@ -72,336 +78,6 @@ class Cso extends BaseController
          }
 
      }
-
-
-
-     public function get_admin_chart_cso_data(){
-
-
-        $csos = array();
-        $cso_status = ['active','inactive'];
-        foreach($cso_status as $row) {
-
-            $cso = $this->CustomModel->countwhere($this->cso_table,array('cso_status' => $row));
-            array_push($csos, $cso);
-        }
-
-       $data['label'] = $cso_status;
-       $data['cso']    = $csos;
-       $data['color'] = ['rgb(5, 176, 133)','rgb(216, 88, 79)'];
-       echo json_encode($data);
-
-     }
-
-
-
-       public function delete_cso(){
-
-         if ($this->request->isAJAX()) {
-
-        $where1 = array('cso_Id' => $this->request->getPost('id'));
-        $where2 = array('cso_id' => $this->request->getPost('id'));
-        $check = $this->CustomModel->countwhere($this->transactions_table,$where1);
-        $cso        = $this->CustomModel->getwhere($this->cso_table,array('cso_id' => $where2['cso_id']))[0]; 
-
-        if ($check > 0) {
-
-             $data = array(
-                    'message' => 'This CSO is used in other operations',
-                    'response' => false
-                    );
-
-             echo json_encode($data);
-            
-        }else {
-
-            $result     = $this->CustomModel->deleteData($this->cso_table,$where2);
-            $this->resp($result,'Deleted Successfully');
-            $this->_action_logs('cso',$cso->cso_id,'Deleted CSO | '.$cso->cso_name);  
-        }
-       
-       }
-
-            
-
-    }
-
-    public function get_cso(){
-
-        if ($this->request->isAJAX()) {
-
-           $where = array('cso_status' => $this->request->getPost('cso_status'),'type_of_cso' => $this->request->getPost('cso_type'));
-
-
-           if ($where['cso_status'] != '' &&  $where['type_of_cso'] == '' ) {
-
-               $where_status = array('cso_status' => $where['cso_status']);
-               $this->query_cso_where($where_status);
-
-           }else if ($where['type_of_cso'] != '' && $where['cso_status'] == '' ) {
-              
-                $where_status = array('type_of_cso' => $where['type_of_cso']);
-                $this->query_cso_where($where_status);
-
-           }else if ($where['cso_status'] != '' &&  $where['type_of_cso'] != '') {
-
-                $where_status = array('cso_status' => $where['cso_status'],'type_of_cso' => $where['type_of_cso']);
-                $this->query_cso_where($where_status);
-               
-           }else if ($where['cso_status'] == '' &&  $where['type_of_cso'] == '') {
-
-               
-               $this->query_all_cso();
-           }
-
-        }
-
-    }
-
-    function query_all_cso(){
-
-        $data = [];
-        $item = $this->CustomModel->get_all_desc($this->cso_table,'cso_code',$this->order_by_desc);
-        foreach ($item as $row) {
-
-            $address = '';
-
-            if ($row->barangay == '') {
-
-                $address = '';
-                // code...
-            }else if ($row->purok_number == '' && $row->barangay != '') {
-                
-                $address = $row->barangay;
-            }else if ($row->purok_number != '' && $row->barangay != '') {
-                
-                $address = 'Purok '.$row->purok_number.' '.$row->barangay;
-            }
-
-            $data[] = array(
-
-                'cso_id' => $row->cso_id,
-                'cso_name' => $row->cso_name,
-                'cso_code' => $row->cso_code,
-                'address' => $address,
-                'contact_person' => $row->contact_person,
-                'contact_number' => $row->contact_number,
-                'telephone_number' => $row->telephone_number,    
-                'email_address' => $row->email_address,
-                'type_of_cso' => strtoupper($row->type_of_cso),
-                'status' => $row->cso_status == 'active' ? '<span class="status-p bg-success">'.$row->cso_status.'</span>' : '<span class="status-p bg-danger">'.$row->cso_status.'</span>',
-                'cso_status' => $row->cso_status
-
-
-            );
-        } 
-
-        echo json_encode($data);
-
-    }
-
-
-    function query_cso_where($where){
-        $data = [];
-        $item = $this->CustomModel->getwhere($this->cso_table,$where);
-        foreach ($item as $row) {
-
-
-             $address = '';
-
-            if ($row->barangay == '') {
-
-                $address = '';
-                // code...
-            }else if ($row->purok_number == '' && $row->barangay != '') {
-                
-                $address = $row->barangay;
-            }else if ($row->purok_number != '' && $row->barangay != '') {
-                
-                $address = 'Purok '.$row->purok_number.' '.$row->barangay;
-            }
-
-            $data[] = array(
-                'cso_id' => $row->cso_id,
-                'cso_name' => $row->cso_name,
-                'cso_code' => $row->cso_code,
-                'address' => $address,
-                'contact_person' => $row->contact_person,
-                'contact_number' => $row->contact_number,
-                'telephone_number' => $row->telephone_number,    
-                'email_address' => $row->email_address,
-                'type_of_cso' => $row->type_of_cso,
-                'status' => $row->cso_status == 'active' ? '<span class="status-p bg-success">'.$row->cso_status.'</span>' : '<span class="status-p bg-danger">'.$row->cso_status.'</span>',
-                'cso_status' => $row->cso_status
-
-            );
-        } 
-
-        echo json_encode($data);
-    }
-
-
-
-public function get_cso_information(){
-
-
-
-    // $cor_path = FCPATH ."uploads/cso_files/".$this->request->getPost('id').'/'.$this->config->folder_name['cor_folder_name'];
-    // $bylaws_path = FCPATH ."uploads/cso_files/".$this->request->getPost('id').'/'.$this->config->folder_name['bylaws_folder_name'];
-
-    //  $aoc_path = FCPATH ."uploads/cso_files/".$this->request->getPost('id').'/'.$this->config->folder_name['aoc_folder_name'];
-
-
-    //  $cor_file = is_dir($cor_path) ? base_url().'uploads/cso_files/'.$this->request->getPost('id').'/cor/'.scandir($cor_path)[2] : '';
-
-
-	$row = $this->CustomModel->getwhere($this->cso_table,array('cso_id' =>  $this->request->getPost('id')))[0];
-
-
-     $address = '';
-
-            if ($row->barangay == '') {
-
-                $address = '';
-                // code...
-            }else if ($row->purok_number == '' && $row->barangay != '') {
-                
-                $address = $row->barangay;
-
-            }else if ($row->purok_number != '' && $row->barangay != '') {
-                
-                $address = 'Purok '.$row->purok_number.' '.$row->barangay;
-            }
-
-
-
-	$data = array(
-        'cso_id' => $row->cso_id,
-        'cso_name' => $row->cso_name,
-        'cso_code' => $row->cso_code,
-        'purok_number' => $row->purok_number,
-        'barangay' => $row->barangay,
-        'address' => $address,
-        'contact_person' => $row->contact_person,
-        'contact_number' => $row->contact_number,
-        'telephone_number' => $row->telephone_number,    
-        'email_address' => $row->email_address,
-        'type_of_cso' => strtoupper($row->type_of_cso),
-        'status' => $row->cso_status,
-        'cso_status' => $row->cso_status == 'active' ?  '<span class="status-p bg-success">'.ucfirst($row->cso_status).'</span>' : '<span class="status-p bg-danger">'.ucfirst($row->cso_status).'</span>',
-        
-           
-
-    );
-
-    echo json_encode($data);
-
-
-}
-
-
-
-
-public function update_cso_information(){
-
-    
-    $data = array(
-        'cso_name' => $this->request->getPost('cso_name'),
-        'cso_code' => $this->request->getPost('cso_code'),
-        'type_of_cso' => $this->request->getPost('cso_type'),
-        'purok_number' => $this->request->getPost('purok') ,
-        'barangay' => $this->request->getPost('barangay'),
-        'contact_person' => ($this->request->getPost('contact_person') == '') ?  '' : $this->request->getPost('contact_person') ,
-        'contact_number' => $this->request->getPost('contact_number'),
-        'telephone_number' => ($this->request->getPost('telephone_number') == '') ?  '' : $this->request->getPost('telephone_number'),
-        'email_address' => ($this->request->getPost('email_address') == '') ?  '' : $this->request->getPost('email_address'),
-        'cso_created' => date('Y-m-d H:i:s', time())
-      
-    );
-    
-    $where = array(
-        'cso_id' => $this->request->getPost('cso_idd')
-    );
-
-    $update = $this->CustomModel->updatewhere($where,$data,$this->cso_table);
-    $this->resp($update,'Successfully Updated');
-    $this->_action_logs('cso',$where['cso_id'],'Updated CSO Information | '.$data['cso_name']);  
-
-}
-
-
-public function update_cso_status(){
-
-    $data = array(
-        'cso_status' => $this->request->getPost('cso_status_update')
-    );
-
-    $where = array(
-        'cso_id' => $this->request->getPost('cso_id')
-    );
-
-    $update     = $this->CustomModel->updatewhere($where,$data,$this->cso_table);
-    $this->resp($update,'Successfully Updated');
-    $cso        = $this->CustomModel->getwhere($this->cso_table,array('cso_id' => $where['cso_id']))[0]; 
-    $this->_action_logs('cso',$cso->cso_id,'Updated CSO Status | '.$cso->cso_name);  
-
-}
-
-
-public function get_cso_file(){
-
-    $type = $_GET['type'];
-    $id   = $_GET['id'];
-    $path = '';
-    $file_type = '';
-    switch ($type) {
-
-        case 'cor':
-            $file_type = $this->config->folder_name['cor_folder_name'];
-            break;
-
-        case 'bylaws':
-            $file_type = $this->config->folder_name['bylaws_folder_name'];
-            break;
-
-        case 'articles':
-            $file_type = $this->config->folder_name['aoc_folder_name'];
-            break;
-    }
-
-    $path = FCPATH ."uploads/cso_files/".$id.'/'.$file_type;
-
-    if (is_dir($path)) {
-        
-         $file = scandir($path)[2];
-
-         $data = array(
-
-                'file' => base_url().'uploads/cso_files/'.$id.'/'.$file_type.'/'.$file,
-                'resp' => true,
-                'message' => ''
-         );
-         
-        
-    }else {
-
-          $data = array(
-
-                'file' => '',
-                'resp' => false,
-                'message' => 'Please update COR file'
-         );
-       
-
-    }
-
-
-    echo json_encode($data);
-
-
-}
-
-
 
 
 
@@ -484,15 +160,368 @@ public function upload_cso_file(){
 }
 
 
+    #READ SECTION
+
+public function get_cso(){
+
+        if ($this->request->isAJAX()) {
+
+           $where = array('cso_status' => $this->request->getPost('cso_status'),'type_of_cso' => $this->request->getPost('cso_type'));
+
+
+           if ($where['cso_status'] != '' &&  $where['type_of_cso'] == '' ) {
+
+               $where_status = array('cso_status' => $where['cso_status']);
+               $this->query_cso_where($where_status);
+
+           }else if ($where['type_of_cso'] != '' && $where['cso_status'] == '' ) {
+              
+                $where_status = array('type_of_cso' => $where['type_of_cso']);
+                $this->query_cso_where($where_status);
+
+           }else if ($where['cso_status'] != '' &&  $where['type_of_cso'] != '') {
+
+                $where_status = array('cso_status' => $where['cso_status'],'type_of_cso' => $where['type_of_cso']);
+                $this->query_cso_where($where_status);
+               
+           }else if ($where['cso_status'] == '' &&  $where['type_of_cso'] == '') {
+
+               
+               $this->query_all_cso();
+           }
+
+        }
+
+    }
+
+private function query_all_cso(){
+
+        $data = [];
+        $item = $this->CustomModel->get_all_desc($this->cso_table,'cso_code',$this->order_by_desc);
+        foreach ($item as $row) {
+
+            $address = '';
+
+            if ($row->barangay == '') {
+
+                $address = '';
+                // code...
+            }else if ($row->purok_number == '' && $row->barangay != '') {
+                
+                $address = $row->barangay;
+            }else if ($row->purok_number != '' && $row->barangay != '') {
+                
+                $address = 'Purok '.$row->purok_number.' '.$row->barangay;
+            }
+
+            $data[] = array(
+
+                'cso_id' => $row->cso_id,
+                'cso_name' => $row->cso_name,
+                'cso_code' => $row->cso_code,
+                'address' => $address,
+                'contact_person' => $row->contact_person,
+                'contact_number' => $row->contact_number,
+                'telephone_number' => $row->telephone_number,    
+                'email_address' => $row->email_address,
+                'type_of_cso' => strtoupper($row->type_of_cso),
+                'status' => $row->cso_status == 'active' ? '<span class="status-p bg-success">'.$row->cso_status.'</span>' : '<span class="status-p bg-danger">'.$row->cso_status.'</span>',
+                'cso_status' => $row->cso_status
+
+
+            );
+        } 
+
+        echo json_encode($data);
+
+    }
+
+
+private function query_cso_where($where){
+        $data = [];
+        $item = $this->CustomModel->getwhere($this->cso_table,$where);
+        foreach ($item as $row) {
+
+
+             $address = '';
+
+            if ($row->barangay == '') {
+
+                $address = '';
+                // code...
+            }else if ($row->purok_number == '' && $row->barangay != '') {
+                
+                $address = $row->barangay;
+            }else if ($row->purok_number != '' && $row->barangay != '') {
+                
+                $address = 'Purok '.$row->purok_number.' '.$row->barangay;
+            }
+
+            $data[] = array(
+                'cso_id' => $row->cso_id,
+                'cso_name' => $row->cso_name,
+                'cso_code' => $row->cso_code,
+                'address' => $address,
+                'contact_person' => $row->contact_person,
+                'contact_number' => $row->contact_number,
+                'telephone_number' => $row->telephone_number,    
+                'email_address' => $row->email_address,
+                'type_of_cso' => $row->type_of_cso,
+                'status' => $row->cso_status == 'active' ? '<span class="status-p bg-success">'.$row->cso_status.'</span>' : '<span class="status-p bg-danger">'.$row->cso_status.'</span>',
+                'cso_status' => $row->cso_status
+
+            );
+        } 
+
+        echo json_encode($data);
+    }
 
 
 
+public function get_cso_information(){
 
-//CSO Officers
+
+
+    // $cor_path = FCPATH ."uploads/cso_files/".$this->request->getPost('id').'/'.$this->config->folder_name['cor_folder_name'];
+    // $bylaws_path = FCPATH ."uploads/cso_files/".$this->request->getPost('id').'/'.$this->config->folder_name['bylaws_folder_name'];
+
+    //  $aoc_path = FCPATH ."uploads/cso_files/".$this->request->getPost('id').'/'.$this->config->folder_name['aoc_folder_name'];
+
+
+    //  $cor_file = is_dir($cor_path) ? base_url().'uploads/cso_files/'.$this->request->getPost('id').'/cor/'.scandir($cor_path)[2] : '';
+
+
+    $row = $this->CustomModel->getwhere($this->cso_table,array('cso_id' =>  $this->request->getPost('id')))[0];
+
+
+     $address = '';
+
+            if ($row->barangay == '') {
+
+                $address = '';
+                // code...
+            }else if ($row->purok_number == '' && $row->barangay != '') {
+                
+                $address = $row->barangay;
+
+            }else if ($row->purok_number != '' && $row->barangay != '') {
+                
+                $address = 'Purok '.$row->purok_number.' '.$row->barangay;
+            }
+
+
+
+    $data = array(
+        'cso_id' => $row->cso_id,
+        'cso_name' => $row->cso_name,
+        'cso_code' => $row->cso_code,
+        'purok_number' => $row->purok_number,
+        'barangay' => $row->barangay,
+        'address' => $address,
+        'contact_person' => $row->contact_person,
+        'contact_number' => $row->contact_number,
+        'telephone_number' => $row->telephone_number,    
+        'email_address' => $row->email_address,
+        'type_of_cso' => strtoupper($row->type_of_cso),
+        'status' => $row->cso_status,
+        'cso_status' => $row->cso_status == 'active' ?  '<span class="status-p bg-success">'.ucfirst($row->cso_status).'</span>' : '<span class="status-p bg-danger">'.ucfirst($row->cso_status).'</span>',
+        
+           
+
+    );
+
+    echo json_encode($data);
+
+
+}
+
+public function get_cso_file(){
+
+    $type = $_GET['type'];
+    $id   = $_GET['id'];
+    $path = '';
+    $file_type = '';
+    switch ($type) {
+
+        case 'cor':
+            $file_type = $this->config->folder_name['cor_folder_name'];
+            break;
+
+        case 'bylaws':
+            $file_type = $this->config->folder_name['bylaws_folder_name'];
+            break;
+
+        case 'articles':
+            $file_type = $this->config->folder_name['aoc_folder_name'];
+            break;
+    }
+
+    $path = FCPATH ."uploads/cso_files/".$id.'/'.$file_type;
+
+    if (is_dir($path)) {
+        
+         $file = scandir($path)[2];
+
+         $data = array(
+
+                'file' => base_url().'uploads/cso_files/'.$id.'/'.$file_type.'/'.$file,
+                'resp' => true,
+                'message' => ''
+         );
+         
+        
+    }else {
+
+          $data = array(
+
+                'file' => '',
+                'resp' => false,
+                'message' => 'Please update COR file'
+         );
+       
+
+    }
+
+
+    echo json_encode($data);
+
+
+}
+
+    #UPDATE SECTION
+
+
+public function update_cso_information(){
+
+    
+    $data = array(
+        'cso_name' => $this->request->getPost('cso_name'),
+        'cso_code' => $this->request->getPost('cso_code'),
+        'type_of_cso' => $this->request->getPost('cso_type'),
+        'purok_number' => $this->request->getPost('purok') ,
+        'barangay' => $this->request->getPost('barangay'),
+        'contact_person' => ($this->request->getPost('contact_person') == '') ?  '' : $this->request->getPost('contact_person') ,
+        'contact_number' => $this->request->getPost('contact_number'),
+        'telephone_number' => ($this->request->getPost('telephone_number') == '') ?  '' : $this->request->getPost('telephone_number'),
+        'email_address' => ($this->request->getPost('email_address') == '') ?  '' : $this->request->getPost('email_address'),
+        'cso_created' => date('Y-m-d H:i:s', time())
+      
+    );
+    
+    $where = array(
+        'cso_id' => $this->request->getPost('cso_idd')
+    );
+
+    $update = $this->CustomModel->updatewhere($where,$data,$this->cso_table);
+    $this->resp($update,'Successfully Updated');
+    $this->_action_logs('cso',$where['cso_id'],'Updated CSO Information | '.$data['cso_name']);  
+
+}
+
+
+public function update_cso_status(){
+
+    $data = array(
+        'cso_status' => $this->request->getPost('cso_status_update')
+    );
+
+    $where = array(
+        'cso_id' => $this->request->getPost('cso_id')
+    );
+
+    $update     = $this->CustomModel->updatewhere($where,$data,$this->cso_table);
+    $this->resp($update,'Successfully Updated');
+    $cso        = $this->CustomModel->getwhere($this->cso_table,array('cso_id' => $where['cso_id']))[0]; 
+    $this->_action_logs('cso',$cso->cso_id,'Updated CSO Status | '.$cso->cso_name);  
+
+}
+
+
+    #DELETE SECTION
+
+public function delete_cso(){
+
+         if ($this->request->isAJAX()) {
+
+        $where1 = array('cso_Id' => $this->request->getPost('id'));
+        $where2 = array('cso_id' => $this->request->getPost('id'));
+        $check = $this->CustomModel->countwhere($this->transactions_table,$where1);
+        $cso        = $this->CustomModel->getwhere($this->cso_table,array('cso_id' => $where2['cso_id']))[0]; 
+
+        if ($check > 0) {
+
+             $data = array(
+                    'message' => 'This CSO is used in other operations',
+                    'response' => false
+                    );
+
+             echo json_encode($data);
+            
+        }else {
+
+            $result     = $this->CustomModel->deleteData($this->cso_table,$where2);
+            $this->resp($result,'Deleted Successfully');
+            $this->_action_logs('cso',$cso->cso_id,'Deleted CSO | '.$cso->cso_name);  
+        }
+       
+       }
+
+            
+
+}
+
+
+#CHART SECTION
+    
+public function get_admin_chart_cso_data(){
+
+
+        $csos = array();
+        $cso_status = ['active','inactive'];
+        foreach($cso_status as $row) {
+
+            $cso = $this->CustomModel->countwhere($this->cso_table,array('cso_status' => $row));
+            array_push($csos, $cso);
+        }
+
+       $data['label'] = $cso_status;
+       $data['cso']    = $csos;
+       $data['color'] = ['rgb(5, 176, 133)','rgb(216, 88, 79)'];
+       echo json_encode($data);
+
+     }
+
+
+public function cso_activities_data(){
+
+     
+    $year           = $this->request->getPost('year');
+    $cso_id         = $this->request->getPost('cso_id');
+
+    $activities     = array();
+    $cso_activities = array();
+    $activity_row   = $this->CustomModel->get_all_order_by($this->activities_table,'type_of_activity_name',$this->order_by_asc);
+
+    foreach ($activity_row as $row) {
+
+        $count_cso_act = $this->CustomModel->count_cso_activities($year,$row->type_of_activity_id,$cso_id);
+        array_push($activities,$row->type_of_activity_name.' - '. '<b>'.$count_cso_act.'</b>');
+     } 
+        
+     $data['label'] = $activities;
+     echo json_encode($data);
+   
+}
+
+
+
+                # CSO OFFICERS #
+
+#CREATE
 
 public function add_cso_officer()
-{
-    if ($this->request->isAJAX()) {
+    {
+        if ($this->request->isAJAX()) {
        
 
             $data = array(
@@ -538,7 +567,9 @@ public function add_cso_officer()
  }
 
 
- public function get_officers(){
+#READ
+
+public function get_officers(){
 
     $data = [];
     $pid = 0;
@@ -569,13 +600,37 @@ public function add_cso_officer()
 
     echo json_encode($data);
 
-    
+}
 
 
- }
+public function count_cso_per_barangay(){
+
+        $barangay = $this->config->barangay;
+
+        $data = [];
+
+        foreach($barangay as $row) {
 
 
- public function update_officer(){
+
+            $data[] = array(
+
+                    'barangay' => $row,
+                    'active' => $this->CustomModel->countwhere($this->cso_table,array('barangay' => $row , 'cso_status' => 'active')),
+                    'inactive' => $this->CustomModel->countwhere($this->cso_table,array('barangay' => $row , 'cso_status' => 'inactive')),
+
+                );
+
+        }
+
+        echo json_encode($data);
+}
+
+
+
+#UPDATE
+
+public function update_officer(){
 
     if ($this->request->isAJAX()) {
 
@@ -608,30 +663,7 @@ public function add_cso_officer()
 
 }
 
-
-public function count_cso_per_barangay(){
-
-        $barangay = $this->config->barangay;
-
-        $data = [];
-
-        foreach($barangay as $row) {
-
-
-
-            $data[] = array(
-
-                    'barangay' => $row,
-                    'active' => $this->CustomModel->countwhere($this->cso_table,array('barangay' => $row , 'cso_status' => 'active')),
-                    'inactive' => $this->CustomModel->countwhere($this->cso_table,array('barangay' => $row , 'cso_status' => 'inactive')),
-
-                );
-
-        }
-
-        echo json_encode($data);
-    }
-
+#DELETE
 
 public function delete_cso_officer(){
 
@@ -650,7 +682,12 @@ public function delete_cso_officer(){
 }
 
 
-    public function add_project(){
+
+                # CSO OFFICERS #
+
+#CREATE
+
+public function add_project(){
 
 
         $now = new \DateTime();
@@ -671,10 +708,12 @@ public function delete_cso_officer(){
         $message = 'Data Saved Successfully';
         $this->resp($result,$message);
         
-    }
+}
 
 
-    public function get_projects(){
+#READ
+
+public function get_projects(){
 
 
         $data = [];
@@ -727,6 +766,10 @@ public function delete_cso_officer(){
     }
 
 
+#UPDATE
+
+
+#DELETE
 public function delete_project(){
 
      if ($this->request->isAJAX()) {
@@ -742,7 +785,8 @@ public function delete_project(){
 }
 
 
-    public function generate_for_print(){
+
+public function generate_for_print(){
 
     
 

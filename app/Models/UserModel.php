@@ -53,6 +53,7 @@ class UserModel extends Model
          
         $builder = $this->db->table('activity_logs');
         $builder->join('users','users.user_id = activity_logs.user_id');
+        $builder->orderBy('activity_logs.activity_log_created', 'desc');
         $query = $builder->get()->getResult();
         return $query;
         

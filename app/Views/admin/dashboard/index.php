@@ -135,7 +135,7 @@ function load_cso_chart() {
 $(document).ready(function(){
    load_admin_chart(year);
    load_cso_chart();
-})
+});
 
 $('#pending_transactions_table_limit').DataTable({
    "ordering": false,

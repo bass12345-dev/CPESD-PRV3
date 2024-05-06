@@ -185,4 +185,21 @@ class CustomModel extends Model
 
 
 
+    public function count_cso_activities($y,$activity,$cso_id){
+
+        $builder = $this->db->table('transactions');
+        
+        $builder->where('type_of_activity_id',$activity);
+        $builder->where('cso_Id',$cso_id);
+        $builder->where('YEAR(date_and_time_filed)',$y);
+        $query = $builder->countAllResults();
+        return $query; 
+
+    }
+
+
+
+
+
+
 }
