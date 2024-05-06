@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Database\ConnectionInterface;
 
 class UserModel extends Model
 {
@@ -39,4 +40,21 @@ class UserModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    protected $db;
+
+    public function __construct(ConnectionInterface &$db){
+       parent::__construct();
+       $this->db =& $db;
+    }
+
+
+    public function getActivityLogs(){
+         
+        $builder = $this->db->table('activity_logs');
+        $builder->join('users','users.user_id = activity_logs.user_id');
+        $query = $builder->get()->getResult();
+        return $query;
+        
+    }
 }

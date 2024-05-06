@@ -70,6 +70,8 @@ $routes->group('admin', ['filter' => 'authGuard'], function($routes) {
 
     $routes->add('cso/view-officers', 'admin\CsoController::view_officers');
     $routes->add('cso/cso-information', 'admin\CsoController::view_cso');
+
+    $routes->add('cso/activity-logs', 'admin\ActivityLogsController::index');
 });
 
 
@@ -313,6 +315,10 @@ $routes->group('api', ['filter' => 'authGuard'], function($routes) {
 
 
     $routes->post('get-pmas-activities', 'api\PendingTransactions::get_pmas_activities');
+
+
+
+     $routes->post('g-a-a-l', 'api\ActionLogs::get_all_logs');
 
 
 });
