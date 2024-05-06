@@ -505,7 +505,7 @@ public function cso_activities_data(){
     foreach ($activity_row as $row) {
 
         $count_cso_act = $this->CustomModel->count_cso_activities($year,$row->type_of_activity_id,$cso_id);
-        array_push($activities,$row->type_of_activity_name.' - '. '<b>'.$count_cso_act.'</b>');
+        array_push($activities,$row->type_of_activity_name.' - '.$count_cso_act);
      } 
         
      $data['label'] = $activities;

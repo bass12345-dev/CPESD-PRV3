@@ -106,7 +106,7 @@ function load_cso_chart(year) {
         JsLoadingOverlay.hide();
         var items = '';
         data.label.forEach((row,index) => {
-            items += '<li class="list-group-item ">'+row+'</li>';
+            items += '<li class="list-group-item ">'+colot_it_red(row)+'</li>';
         });
 
         $('ul.list-group').html(items)
@@ -118,6 +118,15 @@ function load_cso_chart(year) {
 $(document).ready(function(){
    load_cso_chart(year);
 });
+
+function colot_it_red(activity_text){
+       const myArray = activity_text.split(" - ");
+       const activities = myArray[0];
+       const number = myArray[1];
+       return number == 0 ? activities+' - '+'<b><span class="text-danger">'+number+'</span></b>' : activities+' - '+ number;
+
+
+}
 
 
 
