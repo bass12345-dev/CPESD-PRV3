@@ -284,30 +284,13 @@ public function get_admin_pending_transactions(){
 
 public function add_remark(){
 
-        $data = array(
-                    'remarks' => $this->request->getPost('content'),
-                    
-        );
-        $where = array('transaction_id'=>$this->request->getPost('id'));
-        $update = $this->CustomModel->updatewhere($where,$data,$this->transactions_table);
-
-        if($update){
-
-        $resp = array(
-            'message' => 'Remarks Added Successfully',
-            'response' => true
-        );
-
-        }else {
-
-            $resp = array(
-                'message' => 'Error',
-                'response' => false
-            );
-
-        }
-
-        echo json_encode($resp);
+        $data = array('remarks' => $this->request->getPost('content'),);
+        $where       = array('transaction_id'=>$this->request->getPost('id'));
+        $update      = $this->CustomModel->updatewhere($where,$data,$this->transactions_table);
+        $message     = 'Remarks Added Successfully';
+        $this->resp($update,$message);
+        $item        = $this->CustomModel->getwhere($this->transactions_table,array('transaction_id' => $where['transaction_id']))[0]; 
+        $this->_action_logs('pmas',$item->transaction_id,'Added Remarks to PMAS No. '.$this->pmas_number($item));
 } 
 
 public function update_completed(){
@@ -322,24 +305,11 @@ public function update_completed(){
         );
     $where = array('transaction_id'=>$this->request->getPost('id'));
     $update = $this->CustomModel->updatewhere($where,$data,$this->transactions_table);
-
-    if($update){
-
-        $resp = array(
-            'message' => 'Updated Successfully',
-            'response' => true
-        );
-
-        }else {
-
-            $resp = array(
-                'message' => 'Error',
-                'response' => false
-            );
-
-        }
-
-        echo json_encode($resp);
+    $message = 'Updated Successfully';
+    $this->resp($update,$message);
+    $item        = $this->CustomModel->getwhere($this->transactions_table,array('transaction_id' => $where['transaction_id']))[0]; 
+    $this->_action_logs('pmas',$item->transaction_id,'Completed PMAS No. '.$this->pmas_number($item));
+  
 
 }
 
@@ -1352,7 +1322,7 @@ private function resp($update,$message){
                     }
         echo json_encode($resp);
 
-        }
+}
 
      
 }

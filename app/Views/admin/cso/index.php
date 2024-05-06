@@ -345,7 +345,7 @@ $('#add_cso_form').on('submit', function (e) {
          alert("Error occured.please try again");
          $('.btn-add-cso').text('Submit');
          $('.btn-add-cso').removeAttr('disabled');
-         location.reload();
+         // location.reload();
       },
    });
 });

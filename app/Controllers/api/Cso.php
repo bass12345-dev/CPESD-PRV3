@@ -15,6 +15,7 @@ class Cso extends BaseController
     private $cso_project_table            = 'cso_project_implemented';
     private $order_by_desc                = 'desc';
     private $order_by_asc                 = 'asc';
+    private $activity_logs_table         = 'activity_logs';
     protected $request;
     protected $CustomModel;
     public $config;
@@ -56,26 +57,17 @@ class Cso extends BaseController
                 'response' => false
                 );
 
+             echo json_encode($data);
          }else {
             
              $result  = $this->CustomModel->addData($this->cso_table,$data);
-
-                if ($result) {
-
-                    $data = array(
-                    'message' => 'Data Saved Successfully',
-                    'response' => true
-                    );
-                }else {
-
-                    $data = array(
-                    'message' => 'Error',
-                    'response' => false
-                    );
-                }
+             $message = 'Data Saved Successfully';
+             $this->resp($result,$message);
+             // $cso_id =   $this->db->insert_id();
+             // $this->_action_logs('pmas',$cso_id,'Added CSO | '.$data['cso_name']);  
             }
 
-            echo json_encode($data);
+           
          }
 
      }
@@ -83,29 +75,6 @@ class Cso extends BaseController
 
 
      public function get_admin_chart_cso_data(){
-
-
-       //  $csos = array();
-       //  $active_cso = array();
-
-       //  $types = array();
-
-       //  foreach($this->config->cso_type as $row) {
-
-       //      $cso = $this->CustomModel->countwhere($this->cso_table,array('cso_status' => 'active','type_of_cso' => $row));
-       //      array_push($csos, $cso);
-
-       //      array_push($types,$row);
-
-       //  }
-
-
-        
-       //  $data['label'] = $types;
-       //  $data['cso']    = $csos;
-       //  $data['color'] = ['#063970','#2596be','#e28743'];
-
-       // echo json_encode($data);
 
 
         $csos = array();
@@ -1629,6 +1598,42 @@ if ($this->request->isAJAX()) {
 
     return $result;
     }
+
+
+#PRIVATE FUNCTIONS
+
+
+private function _action_logs($type,$item_id,$action){
+
+    $now = new \DateTime();
+    $now->setTimezone(new \DateTimezone('Asia/Manila'));
+
+    $action_logs = array(
+
+                            'user_id'               => session()->get('user_id'),
+                            'type'                  => $type,
+                            '_id'                   => $item_id,
+                            'action'                => $action,
+                            'activity_log_created'  => $now->format('Y-m-d H:i:s'),
+                );
+
+
+    $this->CustomModel->addData($this->activity_logs_table,$action_logs);
+}
+
+private function resp($update,$message){
+
+        if($update)
+                    {
+                        $resp   = array('message' => $message,'response' => true);
+        }else 
+                    {
+                        $resp        = array('message' => 'Error','response' => false);
+                    }
+        echo json_encode($resp);
+
+}
+
 }
 
     
