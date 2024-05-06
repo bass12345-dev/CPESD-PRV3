@@ -19,13 +19,14 @@ class Cso extends BaseController
     protected $request;
     protected $CustomModel;
     public $config;
+    protected $db;
 
     public function __construct()
     {
-       $db = db_connect();
-       $this->CustomModel = new CustomModel($db); 
+       $this->db                        = db_connect();
+       $this->CustomModel = new CustomModel($this->db); 
        $this->request = \Config\Services::request();  
-        $this->config = new Custom_config;
+       $this->config = new Custom_config;
     }
 
     public function add_cso()
@@ -61,10 +62,10 @@ class Cso extends BaseController
          }else {
             
              $result  = $this->CustomModel->addData($this->cso_table,$data);
+             $cso_id             = $this->db->insertID();
              $message = 'Data Saved Successfully';
              $this->resp($result,$message);
-             // $cso_id =   $this->db->insert_id();
-             // $this->_action_logs('pmas',$cso_id,'Added CSO | '.$data['cso_name']);  
+             $this->_action_logs('pmas',$cso_id,'Added CSO | '.$data['cso_name']);  
             }
 
            
