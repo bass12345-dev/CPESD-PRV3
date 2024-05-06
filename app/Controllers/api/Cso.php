@@ -65,7 +65,7 @@ class Cso extends BaseController
              $cso_id             = $this->db->insertID();
              $message = 'Data Saved Successfully';
              $this->resp($result,$message);
-             $this->_action_logs('pmas',$cso_id,'Added CSO | '.$data['cso_name']);  
+             $this->_action_logs('cso',$cso_id,'Added CSO | '.$data['cso_name']);  
             }
 
            
@@ -97,10 +97,12 @@ class Cso extends BaseController
 
        public function delete_cso(){
 
+         if ($this->request->isAJAX()) {
+
         $where1 = array('cso_Id' => $this->request->getPost('id'));
         $where2 = array('cso_id' => $this->request->getPost('id'));
         $check = $this->CustomModel->countwhere($this->transactions_table,$where1);
-
+        $cso        = $this->CustomModel->getwhere($this->cso_table,array('cso_id' => $where2['cso_id']))[0]; 
 
         if ($check > 0) {
 
@@ -108,31 +110,19 @@ class Cso extends BaseController
                     'message' => 'This CSO is used in other operations',
                     'response' => false
                     );
+
+             echo json_encode($data);
             
         }else {
 
-             $result = $this->CustomModel->deleteData($this->cso_table,$where2);
-
-
-            if ($result) {
-
-                    $data = array(
-                    'message' => 'Deleted Successfully',
-                    'response' => true
-                    );
-
-                }else {
-
-                    $data = array(
-                    'message' => 'Error',
-                    'response' => false
-                    );
-                }
-
+            $result     = $this->CustomModel->deleteData($this->cso_table,$where2);
+            $this->resp($result,'Deleted Successfully');
+            $this->_action_logs('cso',$cso->cso_id,'Deleted CSO | '.$cso->cso_name);  
         }
        
+       }
 
-             echo json_encode($data);
+            
 
     }
 
@@ -299,11 +289,7 @@ public function get_cso_information(){
         'type_of_cso' => strtoupper($row->type_of_cso),
         'status' => $row->cso_status,
         'cso_status' => $row->cso_status == 'active' ?  '<span class="status-p bg-success">'.ucfirst($row->cso_status).'</span>' : '<span class="status-p bg-danger">'.ucfirst($row->cso_status).'</span>',
-        // 'files' => array(
-
-        //             'cor' => $cor_file
-        // )
-      
+        
            
 
     );
@@ -338,25 +324,8 @@ public function update_cso_information(){
     );
 
     $update = $this->CustomModel->updatewhere($where,$data,$this->cso_table);
-
-    if($update){
-
-        $resp = array(
-            'message' => 'Successfully Updated',
-            'response' => true
-        );
-
-    }else {
-
-        $resp = array(
-            'message' => 'Error',
-            'response' => false
-        );
-
-    }
-
-    echo json_encode($resp);
-    
+    $this->resp($update,'Successfully Updated');
+    $this->_action_logs('cso',$where['cso_id'],'Updated CSO Information | '.$data['cso_name']);  
 
 }
 
@@ -371,25 +340,10 @@ public function update_cso_status(){
         'cso_id' => $this->request->getPost('cso_id')
     );
 
-    $update = $this->CustomModel->updatewhere($where,$data,$this->cso_table);
-
-    if($update){
-
-        $resp = array(
-            'message' => 'Successfully Updated',
-            'response' => true
-        );
-
-    }else {
-
-        $resp = array(
-            'message' => 'Error',
-            'response' => false
-        );
-
-    }
-
-    echo json_encode($resp);
+    $update     = $this->CustomModel->updatewhere($where,$data,$this->cso_table);
+    $this->resp($update,'Successfully Updated');
+    $cso        = $this->CustomModel->getwhere($this->cso_table,array('cso_id' => $where['cso_id']))[0]; 
+    $this->_action_logs('cso',$cso->cso_id,'Updated CSO Status | '.$cso->cso_name);  
 
 }
 
@@ -458,17 +412,22 @@ public function upload_cso_file(){
     $cso_id     = $this->request->getPost('cso_id');
     $file_type  = $this->request->getPost('file_type');
     $path       = FCPATH ."uploads/cso_files/".$this->request->getPost('cso_id').'/';
+    $action     = '';
     $new_path   = '';
+    $cso_row        = $this->CustomModel->getwhere($this->cso_table,array('cso_id' => $cso_id))[0]; 
 
     switch ($file_type) {
         case 'cor':
-            $file_path = $path.$this->config->folder_name['cor_folder_name'];
+            $file_path  = $path.$this->config->folder_name['cor_folder_name'];
+            $action     = 'COR';
             break;
         case 'bylaws':
             $file_path = $path.$this->config->folder_name['bylaws_folder_name'];
+            $action     = 'Bylaws';
             break;
         case 'aoc':
             $file_path = $path.$this->config->folder_name['aoc_folder_name'];
+            $action     = 'AOC/AOI';
             break;
         
     }
@@ -490,6 +449,7 @@ public function upload_cso_file(){
     $new_name       = '';
 
     if (is_dir($file_path)) {
+
         if (isset($_FILES['update_file'])) {
             $new_name = $_FILES['update_file']['name'];
              $destination = $file_path.'/'.$new_name;
@@ -497,6 +457,9 @@ public function upload_cso_file(){
         }
 
        if(file_exists($destination)) {
+
+            
+            $this->_action_logs('cso',$cso_row->cso_id,'Uploaded '.$action.' of '.$cso_row->cso_name);  
 
             $data = array(
                     'message' => 'File Upload Successfully',
@@ -524,11 +487,12 @@ public function upload_cso_file(){
 
 
 
+
 //CSO Officers
 
 public function add_cso_officer()
 {
-if ($this->request->isAJAX()) {
+    if ($this->request->isAJAX()) {
        
 
             $data = array(
@@ -554,34 +518,20 @@ if ($this->request->isAJAX()) {
         if ($verify > 0) {
 
             $data = array(
-               'message' => 'Position is already taken',
-               'response' => false
+               'message'    => 'Position is already taken',
+               'response'   => false
                );
-             
+
+            echo json_encode($data);
+
           }else {
 
-            $result  = $this->CustomModel->addData($this->cso_officer_table,$data);
-
-            if ($result) {
-
-                $data = array(
-                'message' => 'Data Saved Successfully',
-                'response' => true
-                );
-            }else {
-
-                $data = array(
-                'message' => 'Error',
-                'response' => false
-                );
-            }
-
+            $result     = $this->CustomModel->addData($this->cso_officer_table,$data);
+            $this->resp($result,'Added Successfully');
+            $cso        = $this->CustomModel->getwhere($this->cso_table,array('cso_id' => $data['officer_cso_id']))[0]; 
+            $this->_action_logs('cso',$cso->cso_id,'Added '.$data['first_name'].' '.$data['middle_name'].' '.$data['last_name'].' '.$data['extension'].' as '.$data['cso_position'].' of '.$cso->cso_name );  
           }
         
-         
-    
-
-        echo json_encode($data);
     }
     
 
@@ -627,6 +577,7 @@ if ($this->request->isAJAX()) {
 
  public function update_officer(){
 
+    if ($this->request->isAJAX()) {
 
     $where = array(
         'cso_officer_id' => $this->request->getPost('officer_id')
@@ -648,33 +599,17 @@ if ($this->request->isAJAX()) {
             );
 
 
- $update = $this->CustomModel->updatewhere($where,$data,$this->cso_officer_table);
-
-    if($update){
-
-        $resp = array(
-            'message' => 'Successfully Updated',
-            'response' => true
-        );
-
-    }else {
-
-        $resp = array(
-            'message' => 'Error',
-            'response' => false
-        );
-
-    }
-
-    echo json_encode($resp);
-
-
-    
-
+    $update = $this->CustomModel->updatewhere($where,$data,$this->cso_officer_table);
+    $this->resp($update,'Updated Successfully');
+    $cso    = $this->CustomModel->getwhere($this->cso_table,array('cso_id' => $data['officer_cso_id']))[0]; 
+                $this->_action_logs('cso',$cso->cso_id,'Updated '.$data['first_name'].' '.$data['middle_name'].' '.$data['last_name'].' '.$data['extension'].' as '.$data['cso_position'].' of '.$cso->cso_name );  
     }
 
 
-        public function count_cso_per_barangay(){
+}
+
+
+public function count_cso_per_barangay(){
 
         $barangay = $this->config->barangay;
 
@@ -698,36 +633,21 @@ if ($this->request->isAJAX()) {
     }
 
 
-    public function delete_cso_officer(){
+public function delete_cso_officer(){
 
         
-
+     if ($this->request->isAJAX()) {
          $where = array(
         'cso_officer_id' => $id = $this->request->getPost('id')
         );
 
         $delete =  $this->CustomModel->deleteData($this->cso_officer_table,$where);
-
-        if($delete){
-
-                $resp = array(
-                    'message' => 'Successfully Updated',
-                    'response' => true
-                );
-
-            }else {
-
-                $resp = array(
-                    'message' => 'Error',
-                    'response' => false
-                );
-
-            }
-
-            echo json_encode($resp);
-    
+        $message = 'Successfully Updated';
+        $this->resp($delete,$message);
 
     }
+    
+}
 
 
     public function add_project(){
@@ -748,26 +668,9 @@ if ($this->request->isAJAX()) {
 
        
         $result  = $this->CustomModel->addData($this->cso_project_table,$data);
-
-            if ($result) {
-
-                $data = array(
-                'message' => 'Data Saved Successfully',
-                'response' => true
-                );
-            }else {
-
-                $data = array(
-                'message' => 'Error',
-                'response' => false
-                );
-            }
-
-
-        echo json_encode($data);
-
-
-
+        $message = 'Data Saved Successfully';
+        $this->resp($result,$message);
+        
     }
 
 
@@ -801,11 +704,14 @@ if ($this->request->isAJAX()) {
 
     public function update_project(){
 
+         if($this->request->isAJAX()) {
+
             $data = array(
                 'title_of_project'      => $this->request->getPost('update_title_of_project'),
                 'amount'                => $this->request->getPost('update_amount'),
                 'year'                  => date("Y-m-d", strtotime($this->request->getPost('update_year'))),
                 'funding_agency'        => $this->request->getPost('update_funding_agency') ,
+                'status'                => $this->request->getPost('update_status'),
             );
 
             $where = array(
@@ -813,59 +719,27 @@ if ($this->request->isAJAX()) {
                     );
 
             $update = $this->CustomModel->updatewhere($where,$data,$this->cso_project_table);
+            $message = 'Successfully Updated';
+            $this->resp($update,$message);
 
-            if($update){
-
-                        $resp = array(
-                            'message' => 'Successfully Updated',
-                            'response' => true
-                        );
-
-                    }else {
-
-                        $resp = array(
-                            'message' => 'Error',
-                            'response' => false
-                        );
-
-                    }
-
-                    echo json_encode($resp);
-
+        }
 
     }
 
 
-        public function delete_project(){
+public function delete_project(){
 
-        
-
+     if ($this->request->isAJAX()) {
          $where = array(
         'cso_project_implemented_id' => $id = $this->request->getPost('id')
         );
 
         $delete =  $this->CustomModel->deleteData($this->cso_project_table,$where);
-
-        if($delete){
-
-                $resp = array(
-                    'message' => 'Successfully Updated',
-                    'response' => true
-                );
-
-            }else {
-
-                $resp = array(
-                    'message' => 'Error',
-                    'response' => false
-                );
-
-            }
-
-            echo json_encode($resp);
-    
-
+        $message = 'Deleted Successfully';
+        $this->resp($delete,$message);
     }
+
+}
 
 
     public function generate_for_print(){
